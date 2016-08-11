@@ -1,11 +1,11 @@
 # The Software Sustainability Institute / recipy
 
 A collaboration between [The Software Sustainability 
-Institute](http://www.software.ac.uk) and Robin Wilson 
+Institute](http://www.software.ac.uk) and [Robin Wilson] 
 (http://www.rtwilson.com/academic/) and Janneke van der Zwaan of 
-Geography and Environment 
-(http://www.southampton.ac.uk/geography/index.page) at the University of  
-Southampton (http://www.southampton.ac.uk/).
+[Geography and Environment]
+(http://www.southampton.ac.uk/geography/index.page) at the [University 
+of Southampton](http://www.southampton.ac.uk/).
 
 The objective of our collaboration is to develop an automated test 
 suite for the [recipy](https://github.com/recipy/recipy) Python 
@@ -44,4 +44,4 @@ If time permits:
 ## Copyright and licence
 
 recipy test framework code is Copyright 2016, The University of 
-Edinburgh, licenced under [Apache License Version 2.0](./LICENCE.md).
+Edinburgh, licenced under [Apache License Version 2.0](./LICENSE.md).

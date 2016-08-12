@@ -4,7 +4,7 @@ Mike Jackson, The Software Sustainability Institute / EPCC, The University of Ed
 
 ## Introduction
 
-This report reviews recipy, a provenance framework for Python developed by RObin Wilson of the University of Southampton. This report summarises experiences of, and makes recommendations relating to, deploying and using recipy.
+This report reviews recipy, a provenance framework for Python. This report summarises experiences of, and makes recommendations relating to, deploying and using recipy. It was written as a side-effect of familiarising myself with recipy.
 
 The review used the following resources:
 
@@ -139,7 +139,7 @@ wget http://repo.continuum.io/archive/Anaconda2-4.1.1-Linux-x86_64.sh
 bash Anaconda2-4.1.1-Linux-x86_64.sh
 ```
 
-Create use-anaconda2.sh to set up environment (usually this goes into .bashrc, but don't want to collide with Anaconda Python 3 or pyenv):
+Create `use-anaconda2.sh` to set up environment (usually this goes into `.bashrc`, but I don't want its paths to interfere with Anaconda Python 3 or pyenv):
 
 ```
 export PATH=/home/ubuntu/anaconda2/bin:$PATH
@@ -167,7 +167,7 @@ scikit-image==0.12.3
 scikit-learn==0.17.1
 ```
 
-The current version of GDAL, 2.1.0, needs libgdal 1.11.0 or greater. apt-get installs version 1.9.0-1~. Running apt-get install python-gdal, on the default Python users VM, showed it to install Python GDAL 1.10.1. easy_install failed to find 1.10.1. pip install GDAL=1.10.0 showed the closest was 1.10.0.
+The current version of GDAL, 2.1.0, needs libgdal 1.11.0 or greater. apt-get installs version 1.9.0-1~. Running `apt-get install python-gdal`, on the default Python users VM, showed it to install Python GDAL 1.10.1. easy_install failed to find 1.10.1. `pip install GDAL=1.10.0` showed that the closest match was 1.10.0.
 
 Install Anaconda, Python 3.5.2 and packages:
 
@@ -176,7 +176,7 @@ wget http://repo.continuum.io/archive/Anaconda3-4.1.1-Linux-x86_64.sh
 bash Anaconda3-4.1.1-Linux-x86_64.sh
 ```
 
-Create use-anaconda3.sh to set up environment:
+Create `use-anaconda3.sh` to set up environment:
 
 ```
 export PATH=/home/ubuntu/anaconda3/bin:$PATH
@@ -213,7 +213,7 @@ apt-get install -y make build-essential libssl-dev zlib1g-dev libbz2-dev libread
 curl -L https://raw.githubusercontent.com/yyuu/pyenv-installer/master/bin/pyenv-installer | bash
 ```
 
-Create use-pyenv.sh to set up environment to use pyenv (usually this goes into .bash_profile, but don't want to have pyenv on same PATH with Anaconda):
+Create `use-pyenv.sh` to set up environment (usually this goes into `.bash_profile`, but I don't want its paths to interfere with Anaconda Python 3 or virtualenv):
 
 ```
 export PATH="$HOME/.pyenv/bin:$PATH"
@@ -310,7 +310,7 @@ Tk/tkImaging.c:396:5: error: ISO C90 forbids mixed declarations and code [-Werro
 
 which has been [noted by others](https://github.com/python-pillow/Pillow/issues/2017). So I installed the same version as for Python 2 (3.2.0), which others noted works.
 
-#### Docker (dockeruser)
+#### Docker
 
 **TODO** is there any point in doing this? It's just another VM in effect!
 
@@ -340,7 +340,7 @@ This summarises the environments into which recipy was deployed. The default pac
 
 The following scripts were used to check that a recipy deployment was operating correctly with numpy.
 
-check-recipy.py:
+`check-recipy.py`:
 
 ```
 import numpy as np
@@ -349,7 +349,7 @@ data = np.array([list(range(4,8)), list(range(12,16))])
 np.savetxt("file.csv", data, delimiter=",")
 ```
 
-check-recipy-import.py:
+`check-recipy-import.py`:
 
 ```
 import recipy
@@ -359,9 +359,9 @@ data = np.array([list(range(4,8)), list(range(12,16))])
 np.savetxt("file-import.csv", data, delimiter=",")
 ```
 
-The following script was used to check recipy's wrapper's for Python's open command:
+The following script was used to check recipy's wrapper's for Python's `open` command:
 
-check-recipy-open.py:
+`check-recipy-open.py`:
 
 ```
 import recipy
@@ -370,6 +370,8 @@ with recipy.open('file-open.txt', 'w') as f:
 ```
 
 ### Install recipy package 0.2.3 under Windows 7 Enterprise SP1 + 3.5.2 (Anaconda 4.1.1)
+
+In the following, the Git Bash prompt was used.
 
 The latest recipy package, 0.2.3, can be installed, via Python's [pip](https://pip.pypa.io/en/stable/) package manager, as follows:
 
@@ -400,7 +402,7 @@ mkdir deployment
 cd deployment
 ```
 
-Copy scripts to deployment/
+Copy scripts to `deployment/`.
 
 ```
 python check-recipy-import.py
@@ -421,7 +423,7 @@ Outputs:
   C:\Users\mjj\deployment\file-import.csv
 ```
 
-**Suggestion** README.md states that:
+**Suggestion** `README.md` states that:
 
 > it will produce an output called test.npy. To find out the details of the run which created this file you can search using
 > recipy search test.npy
@@ -430,9 +432,9 @@ Rephrase this to:
 
 > The sample script above will produce...
 
-to reinforce that it's the sample script, and not recipy, that produces test.npy.
+to reinforce that it's the sample script, and not recipy, that produces `test.npy`.
 
-**Suggestion** Log the versions of the libraries (e.g. numpy) used too.
+**Suggestion** Log the versions of the libraries (e.g. numpy) used too. **Deprecated:** The current version of recipy on GitHub now does this.
 
 ### Use GUI
 
@@ -442,7 +444,7 @@ recipy gui
 
 A browser appears.
 
-**Issue** The search box did not seem to work. I tried it using "mjj", "file.txt", "C:\Users\mjj\ssi\file" and for each got a HTTP 500 Interal Server Error.
+**Issue** The searches did not work. I tried it using `mjj`, `file-import.csv`, `C:\Users\mjj\deployment\file` and for each got a `HTTP 500 Interal Server Error`.
 
 **Suggestion** Provide examples of search strings in the documentation.
 
@@ -474,7 +476,7 @@ cat ../Downloads/runs.json
 ]
 ```
 
-* Enter Notes: "This was Mike's first use of recipy."
+* Enter Notes: `This was Mike's first use of recipy.`
 * Click Save notes
 * Click Save as JSON
 
@@ -569,7 +571,7 @@ recipy search -f "il..c"
 No results found.
 ```
 
-**Suggestion** Explain the difference between fuzzy and regex searching in the documentation, and provide examples of fuzzy and regular expression patterns.
+**Suggestion** Explain the difference between `fuzzy` and `regex` searching in the documentation, and provide examples of fuzzy and regular expression patterns.
 
 ### Annotate information
 
@@ -581,7 +583,7 @@ recipy annotate
 No annotation entered, exiting.
 ```
 
-**Suggestion** Document the need to set the EDITOR variable and that user can override their default e.g. if they want nano rather than vi on Ubuntu.
+**Suggestion** Document the need to set the `EDITOR` variable and that user can override their default e.g. if they want nano rather than vi on Ubuntu.
 
 ```
 EDITOR=notepad.exe
@@ -599,9 +601,9 @@ recipy annotate
 ...as above...
 ```
 
-**Issue** Under Windows, I tried using .bashrc and .bash_profile to set EDITOR, and also tried running these commands within the Anaconda Python Prompt, rather than the Git Bash prompt, but with no success.
+**Issue** Under Windows, I tried using `.bashrc` and `.bash_profile` to set `EDITOR`, and also tried running these commands within the Anaconda Python Prompt, rather than the Git Bash prompt, but with no success.
 
-**Suggestion** Resolve this issue or, if it cannot be resolved, recommend that Windows/Git Bash/Anaconda users use recipy gui.
+**Suggestion** Resolve this issue or, if it cannot be resolved, recommend that Windows/Git Bash/Anaconda users use `recipy gui`.
 
 ### View information outwith original directory
 
@@ -671,7 +673,7 @@ Inputs: none
 Outputs: none
 ```
 
-**TODO** maybe this was added to recipy and README.md since the most recent package was bundled? See if this arises using latest version. If it doesn't arise in the latest version then add a Suggestion to describe what features are supported by what versions.
+**Suggestion** This gives rise to a different error when using the current version on GitHub (see below). It looks like this feature and information was added to recipy and `README.md` since the 0.2.3 package was created. Add a link to the recipy [pypi](https://pypi.python.org/pypi/recipy) page to point to the `README.md` corresponding to the version in the [v0.2.3](https://github.com/recipy/recipy/releases/tag/v0.2.3) tag.
 
 ### Use Git
 
@@ -695,7 +697,7 @@ Outputs:
   C:\Users\mjj\deployment\file-import.csv
 ```
 
-Edit check-recipy-import.py and change first range to be range(5,9)
+Edit `check-recipy-import.py` and change first `range` function call to be `range(5,9)`.
 
 ```
 python check-recipy-import.py
@@ -730,7 +732,7 @@ recipy latest --diff
 ...as above but without the diff information...
 ```
 
-**Suggestion** Describe how and when --diff will show the diff i.e. if the commit is newer than the most recent files is what it seems to do.
+**Suggestion** Describe how and when `--diff` will show the `diff` i.e. if the commit is newer than the most recent files is what it seems to do. I found an example by trial and error.
 
 **Suggestion** Provide brief descriptions, with sample inputs and outputs for every command.
 
@@ -750,6 +752,7 @@ Git: commit 6ee366b86b7f3beb9d943a2ff526a562bc692452, in repo C:\Users\mjj\deplo
 ### Uninstall
 
 ```
+cd
 find Anaconda3/ -name "*recipy*"
 ```
 ```
@@ -773,10 +776,273 @@ Successfully uninstalled recipy-0.2.3
 ```
 find Anaconda3/ -name "*recipy*"
 ```
+```
+pip freeze | grep recipy
+```
+```
+```
+```
+rm -rf ~/.recipy
+```
+
+### Install recipy latest version under Windows 7 Enterprise SP1 + 3.5.2 (Anaconda 4.1.1)
+
+The latest version of recipy, from GitHub, can be deployed as follows:
+
+```
+git clone https://github.com/recipy/recipy
+cd recipy
+git log -1 --format="%ai %H"
+```
+```
+2016-05-31 15:48:50 +0200 dd2b7ae96b99ca6d3678f8236ca97ec5ad672454
+```
+
+```
+python setup.py install
+```
+
+The previous steps were re-run. Only information on where commands, outputs or behaviour deviated from the run above, and issues and suggestions arising are documented.
+
+```
+pip freeze | grep recipy
+```
+```
+recipy==0.2.3
+```
+```
+recipy --version
+```
+```
+recipy v0.2.3
+```
+
+**Suggestion** The recipy 0.2.3 package was [tagged](https://github.com/recipy/recipy/releases/tag/v0.2.3) on 17/11/2015. There have been many commits since then, so the current state of the repository, on GitHub, is no longer version 0.2.3 but, at least, 0.2.4. I'd recommend upping the version number in setup.py immediately after you tag a release, or at the first time you make a commit after tagging the release.
+
+```
+recipy search file-import.csv
+```
+```
+Traceback (most recent call last):
+  File "C:\Users\mjj\Anaconda3\Scripts\recipy-script.py", line 9, in <module>
+    load_entry_point('recipy==0.2.3', 'console_scripts', 'recipy')()
+  File "C:\Users\mjj\Anaconda3\lib\site-packages\recipy-0.2.3-py3.5.egg\recipyCmd\recipycmd.py", line 116, in main
+    search(args)
+  File "C:\Users\mjj\Anaconda3\lib\site-packages\recipy-0.2.3-py3.5.egg\recipyCmd\recipycmd.py", line 255, in search
+    lambda x: listsearch(os.path.abspath(filename), x)))
+  File "C:\Users\mjj\Anaconda3\lib\site-packages\tinydb\database.py", line 407,
+in search
+    elements = [element for element in self.all() if cond(element)]
+  File "C:\Users\mjj\Anaconda3\lib\site-packages\tinydb\database.py", line 407,
+in <listcomp>
+    elements = [element for element in self.all() if cond(element)]
+  File "C:\Users\mjj\Anaconda3\lib\site-packages\tinydb\queries.py", line 45, in __call__
+    return self.test(value)
+  File "C:\Users\mjj\Anaconda3\lib\site-packages\tinydb\queries.py", line 136, in impl
+    return test(value)
+  File "C:\Users\mjj\Anaconda3\lib\site-packages\tinydb\queries.py", line 305, in <lambda>
+    return self._generate_test(lambda value: _cmp(value),
+  File "C:\Users\mjj\Anaconda3\lib\site-packages\tinydb\queries.py", line 299, in _cmp
+    return is_sequence(value) and any(cond(e) for e in value)
+  File "C:\Users\mjj\Anaconda3\lib\site-packages\tinydb\queries.py", line 299, in <genexpr>
+    return is_sequence(value) and any(cond(e) for e in value)
+  File "C:\Users\mjj\Anaconda3\lib\site-packages\recipy-0.2.3-py3.5.egg\recipyCmd\recipycmd.py", line 255, in <lambda>
+    lambda x: listsearch(os.path.abspath(filename), x)))
+  File "C:\Users\mjj\Anaconda3\lib\site-packages\recipy-0.2.3-py3.5.egg\recipyCommon\tinydb_utils.py", line 45, in listsearch
+    return bool(re.search(query, item) or
+  File "C:\Users\mjj\Anaconda3\lib\re.py", line 173, in search
+    return _compile(pattern, flags).search(string)
+  File "C:\Users\mjj\Anaconda3\lib\re.py", line 293, in _compile
+    p = sre_compile.compile(pattern, flags)
+  File "C:\Users\mjj\Anaconda3\lib\sre_compile.py", line 536, in compile
+    p = sre_parse.parse(p, flags)
+  File "C:\Users\mjj\Anaconda3\lib\sre_parse.py", line 829, in parse
+    p = _parse_sub(source, pattern, 0)
+  File "C:\Users\mjj\Anaconda3\lib\sre_parse.py", line 437, in _parse_sub
+    itemsappend(_parse(source, state))
+  File "C:\Users\mjj\Anaconda3\lib\sre_parse.py", line 524, in _parse
+    code = _escape(source, this, state)
+  File "C:\Users\mjj\Anaconda3\lib\sre_parse.py", line 388, in _escape
+    raise source.error("incomplete escape %s" % escape, len(escape))
+sre_constants.error: incomplete escape \U at position 2
+```
+
+**Issue** Under Windows `recipy search file-import.csv` raises `sre_constants.error: incomplete escape \U at position 2` using Git Bash and Anaconda Python prompts.
+
+```
+cat ../Downloads/runs.json
+```
+```
+[
+  {
+    "exit_date": "{TinyDate}:2016-08-12T08:30:23",
+    ...
+    "libraries": [
+      "recipy v0.2.3",
+      "numpy v1.11.1"
+    ],
+    ...
+    "warnings": []
+  }
+]
+```
+
+Note the additional fields, not in the 0.2.3 package release.
+
+`recipy gui` searches for `mjj` and `file-import.csv` now worked.
+
+**Issue** The search did not work for `C:\Users\mjj\deployment\file`, but did for `C:\\Users\\mjj\\deployment\\file`. Update the search code to escape `\` in file paths.
+
+While `recipy search` failed, above, `recipy latest` worked.
+
+```
+recipy latest -j
+```
+```
+Traceback (most recent call last):
+  File "C:\Users\mjj\Anaconda3\Scripts\recipy-script.py", line 9, in <module>
+    load_entry_point('recipy==0.2.3', 'console_scripts', 'recipy')()
+  File "C:\Users\mjj\Anaconda3\lib\site-packages\recipy-0.2.3-py3.5.egg\recipyCmd\recipycmd.py", line 118, in main
+    latest(args)
+  File "C:\Users\mjj\Anaconda3\lib\site-packages\recipy-0.2.3-py3.5.egg\recipyCmd\recipycmd.py", line 228, in latest
+    output = dumps(run, indent=2, sort_keys=True)
+  File "C:\Users\mjj\Anaconda3\lib\json\__init__.py", line 237, in dumps
+    **kw).encode(obj)
+  File "C:\Users\mjj\Anaconda3\lib\json\encoder.py", line 200, in encode
+    chunks = list(chunks)
+  File "C:\Users\mjj\Anaconda3\lib\json\encoder.py", line 429, in _iterencode
+    yield from _iterencode_dict(o, _current_indent_level)
+  File "C:\Users\mjj\Anaconda3\lib\json\encoder.py", line 403, in _iterencode_dict
+    yield from chunks
+  File "C:\Users\mjj\Anaconda3\lib\json\encoder.py", line 436, in _iterencode
+    o = _default(o)
+  File "C:\Users\mjj\Anaconda3\lib\json\encoder.py", line 179, in default
+    raise TypeError(repr(o) + " is not JSON serializable")
+TypeError: datetime.datetime(2016, 8, 12, 8, 49, 22) is not JSON serializable
+```
+```
+recipy search -i 35eb0a07-d136-4a9e-835c-d84f108ec89 -j
+```
+```
+Traceback (most recent call last):
+  File "C:\Users\mjj\Anaconda3\Scripts\recipy-script.py", line 9, in <module>
+    load_entry_point('recipy==0.2.3', 'console_scripts', 'recipy')()
+  File "C:\Users\mjj\Anaconda3\lib\site-packages\recipy-0.2.3-py3.5.egg\recipyCmd\recipycmd.py", line 116, in main
+    search(args)
+  File "C:\Users\mjj\Anaconda3\lib\site-packages\recipy-0.2.3-py3.5.egg\recipyCmd\recipycmd.py", line 267, in search
+    output = dumps(res_to_output, indent=2, sort_keys=True)
+  File "C:\Users\mjj\Anaconda3\lib\json\__init__.py", line 237, in dumps
+    **kw).encode(obj)
+  File "C:\Users\mjj\Anaconda3\lib\json\encoder.py", line 200, in encode
+    chunks = list(chunks)
+  File "C:\Users\mjj\Anaconda3\lib\json\encoder.py", line 427, in _iterencode
+    yield from _iterencode_list(o, _current_indent_level)
+  File "C:\Users\mjj\Anaconda3\lib\json\encoder.py", line 324, in _iterencode_list
+    yield from chunks
+  File "C:\Users\mjj\Anaconda3\lib\json\encoder.py", line 403, in _iterencode_dict
+    yield from chunks
+  File "C:\Users\mjj\Anaconda3\lib\json\encoder.py", line 436, in _iterencode
+    o = _default(o)
+  File "C:\Users\mjj\Anaconda3\lib\json\encoder.py", line 179, in default
+    raise TypeError(repr(o) + " is not JSON serializable")
+TypeError: datetime.datetime(2016, 8, 12, 8, 49, 22) is not JSON serializable
+```
+
+**Issue** Under Windows `recipy latest -j` and `recipy search -i 5f551f52-2e4b-429e-bd4e-0a22ae12f19 -j` both raise `TypeError: datetime.datetime(2016, 8, 12, 8, 49, 22) is not JSON serializable` using Git Bash and Anaconda Python prompts.
+
+```
+recipy annotate
+```
+```
+'$EDITOR' is not recognized as an internal or external command,
+operable program or batch file.
+No annotation entered, exiting.
+```
+
+**Issue** Under Windows, I tried using `.bashrc` and `.bash_profile` to set `EDITOR`, and also tried running these commands within the Anaconda Python Prompt, rather than the Git Bash prompt, but with no success.
+
+**Suggestion** Resolve this issue or, if it cannot be resolved, recommend that Windows/Git Bash/Anaconda users use `recipy gui`.
+
+```
+python check-recipy-open.py
+```
+```
+recipy run inserted, with ID 02c4d038-6934-4057-9c85-41d717ab6052
+Traceback (most recent call last):
+  File "check-recipy-open.py", line 2, in <module>
+    with recipy.open('file-open.txt', 'w') as f:
+  File "C:\Users\mjj\Anaconda3\lib\site-packages\recipy-0.2.3-py3.5.egg\recipy\u
+tils.py", line 20, in open
+    mode = kwargs['mode']
+KeyError: 'mode'
+```
+
+Edit `check-recipy-open.py` and change:
+
+```
+with recipy.open('file-open.txt', 'w') as f:
+```
+to
+```
+with recipy.open('file-open.txt', mode='w') as f:
+```
+so that the `mode` parameter is named.
+```
+python check-recipy-open.py
+```
+```
+recipy run inserted, with ID c306c23b-9f24-4781-83e3-a4c9b19ea309
+C:\Users\mjj\Anaconda3\lib\site-packages\recipy-0.2.3-py3.5.egg\recipyCommon\libraryversions.py:30: UserWarning: requesting version of a module that has not been imported (recipy.open)
+  'imported ({})'.format(modulename))
+Traceback (most recent call last):
+  File "check-recipy-open.py", line 2, in <module>
+    with recipy.open('file-open.txt', mode='w') as f:
+  File "C:\Users\mjj\Anaconda3\lib\site-packages\recipy-0.2.3-py3.5.egg\recipy\utils.py", line 35, in open
+    log_output(args[0], 'recipy.open')
+  File "C:\Users\mjj\Anaconda3\lib\site-packages\recipy-0.2.3-py3.5.egg\recipy\log.py", line 177, in log_output
+    db.update(append("libraries", get_version(source), no_duplicates=True), eids=[RUN_ID])
+  File "C:\Users\mjj\Anaconda3\lib\site-packages\tinydb\database.py", line 377,
+in update
+    cond, eids
+  File "C:\Users\mjj\Anaconda3\lib\site-packages\tinydb\database.py", line 230,
+in process_elements
+    data = self._read()
+  File "C:\Users\mjj\Anaconda3\lib\site-packages\tinydb\database.py", line 277,
+in _read
+    return self._storage.read()
+  File "C:\Users\mjj\Anaconda3\lib\site-packages\tinydb\database.py", line 31, in read
+    raw_data = (self._storage.read() or {})[self._table_name]
+  File "C:\Users\mjj\Anaconda3\lib\site-packages\tinydb_serialization\__init__.py", line 139, in read
+    data = self.storage.read()
+  File "C:\Users\mjj\Anaconda3\lib\site-packages\tinydb\storages.py", line 93, in read
+    self._handle.seek(0, 2)
+ValueError: I/O operation on closed file.
+```
+
+**Issue** `recipy.open` does not seem to support the same signature as Python `open`. I would expect it would support the same signature.
+
+Uninstall:
+
+```
+cd
+find Anaconda3/ -name "*recipy*"
+rm -rf Anaconda3/Lib/site-packages/recipy-0.2.3-py3.5.egg
+rm -f Anaconda3/Scripts/recipy-script.py
+rm -f Anaconda3/Scripts/recipy.exe
+pip freeze | grep recipy
+```
+```
+```
 
 ### Deployment of recipy package 0.2.3 under other environments
 
 The above steps were run on the other environments. Only information on where commands, outputs or behaviour deviated from the run above, and issues and suggestions arising are documented.
+
+### Install recipy latest version under other environments
+
+The above steps were run on the other environments. Only information on where commands, outputs or behaviour deviated from the run above, and issues and suggestions arising are documented.
+
+**TODO**
 
 ```
 python --version
@@ -792,6 +1058,9 @@ python check-recipy-import.py
 recipy search file-import.csv
 recipy gui
 * Run searches
+mjj
+file-import.csv
+C:\Users\mjj\deployment\file
 * Click View details
 * Click Save as JSON
 cat ../Downloads/runs.json
@@ -853,69 +1122,42 @@ python check-recipy-import.py
 recipy latest
 ```
 ```
+cd
 find Anaconda3/ -name "*recipy*"
 pip uninstall recipy
+OR
+rm -rf Anaconda3/Lib/site-packages/recipy-0.2.3-py3.5.egg
+rm -f Anaconda3/Scripts/recipy-script.py
+rm -f Anaconda3/Scripts/recipy.exe
+
 find Anaconda3/ -name "*recipy*"
+pip freeze | grep recipy
 ```
-
-Ubuntu 14.04.3 LTS + 2.7.6
-
-Ubuntu 14.04.3 LTS + 3.4.0
-
-Ubuntu 14.04.3 LTS + 2.7.6 + virtualenv 15.0.2)
-
-Ubuntu 14.04.3 LTS + 3.4.0 + virtualenv 15.0.2)
-
-Ubuntu 14.04.3 LTS + 3.5.2 (Anaconda 4.1.1)
-
-Ubuntu 14.04.3 LTS + 2.7.4 (pyenv 05/08/2016)
-
-Ubuntu 14.04.3 LTS + 3.4.0 (pyenv 05/08/2016)
-
-### Deployment of latest version under all environments
-
-The latest version of recipy, from its GitHub repository, can be deployed as follows:
-
 ```
-git clone https://github.com/recipy/recipy
-cd recipy
-python setup.py install
-```
-
-Uninstall using
-
-```
-python setup.py install --record install-files.txt
-cat install-files.txt | sudo xargs rm -rf
+rm -rf ~/.recipy
 ```
 
 **TODO**
 
-Same steps as before.
-
-Windows 7 Enterprise SP1 + 3.5.2 (Anaconda 4.1.1)
-
 Ubuntu 14.04.3 LTS + 2.7.6
 
 Ubuntu 14.04.3 LTS + 3.4.0
+
+---
 
 Ubuntu 14.04.3 LTS + 2.7.6 + virtualenv 15.0.2)
 
 Ubuntu 14.04.3 LTS + 3.4.0 + virtualenv 15.0.2)
 
+---
+
 Ubuntu 14.04.3 LTS + 3.5.2 (Anaconda 4.1.1)
+
+---
 
 Ubuntu 14.04.3 LTS + 2.7.4 (pyenv 05/08/2016)
 
 Ubuntu 14.04.3 LTS + 3.4.0 (pyenv 05/08/2016)
-
----
-
-## Other examples
-
-**TODO** Write and run one sample script per package recipy can log. These can form basis of test scripts.
-
-**Suggestion** Provide guidelines on how to use recipy in a research workflow e.g. how to use recipy and Git to record provenance and recommended ways of archiving input/output files etc.
 
 ---
 
@@ -931,7 +1173,19 @@ README.md comments that
 > If you want to log inputs and outputs of files read or written with built-in open, you need to do a little more work. Either use `recipy.open` (only requires import recipy at the top of your script), or add `from recipy import open` and just use `open`. This workaround is required, because many libraries use built-in open internally, and you only want to record the files you explicitly opened yourself.
 > If you use Python 2, you can pass an `encoding` parameter to `recipy.open`. In this case `codecs` is used to open the file with proper encoding.
 
-**Suggestion** Describe whether recipy.open has the same function signature as open (with the additional encoding parameter) or whether it changes it, in which case describe the altered signature.
+**Suggestion** Describe whether `recipy.open` has the same function signature as `open` (with the additional `encoding` parameter) or whether it changes it, in which case describe the altered signature.
+
+---
+
+## Other examples
+
+**TODO** Write and run one sample script per package/function recipy can log (look at the recipy source code) These can form basis of test scripts.
+
+**Suggestion** Provide guidelines on how to use recipy in a research workflow e.g. how to use recipy and Git to record provenance and recommended ways of archiving input/output files etc.
+
+**Suggestion** Provide a list of the functions for each package that recipy logs.
+
+**Suggestion** Develop a tool that uses reflection to traverse the functions of a package and print out the names of functions (and, if possible, their "help" information) that may be input/output functions that should be logged by recipy (e.g. functions with names such as `input/output`, `read/write`, `load/save`). This could help those who want to develop recipy wrappers for additional packages.
 
 ---
 

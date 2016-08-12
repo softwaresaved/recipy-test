@@ -56,7 +56,7 @@ I didn't install GDAL due to the additional Windows-specific install process.
 
 ### Ubuntu 14.04.3 LTS virtual machine (default Python users)
 
-By default, Ubuntu 14.04.3 LTS comes with Python 2.7.6 and 3.4.0.
+By default, Ubuntu 14.04.3 LTS comes with Python 2.7.6 and 3.4.3.
 
 Install Python 2 packages:
 
@@ -119,6 +119,26 @@ I used pip for scikit-learn and nibabel as there are no python3-sklearn or pytho
 **virtualenv 15.0.2**
 
 [virtualenv](https://pypi.python.org/pypi/virtualenv) is a tool that creates isolated Python environments with all the executables and packages that that specific environment needs. [virtualenvwrapper](https://virtualenvwrapper.readthedocs.org/en/latest/) extends virtualenv with wrappers to make creating and managing virtual environments easier:
+
+```
+sudo su -
+pip install virtualenvwrapper
+pip3 install virtualenvwrapper
+```
+
+**virtualenv 15.0.2**
+
+[virtualenv](https://pypi.python.org/pypi/virtualenv) is a tool that creates isolated Python environments with all the executables and packages that that specific environment needs.
+
+```
+sudo su -
+pip install virtualenv
+pip3 install virtualenv
+```
+
+**virtualenvwrapper 4.7.1**
+
+[virtualenvwrapper](https://virtualenvwrapper.readthedocs.org/en/latest/) extends virtualenv with wrappers to make creating and managing virtual environments easier:
 
 ```
 sudo su -
@@ -202,7 +222,7 @@ scikit-image==0.12.3
 scikit-learn==0.17.1
 ```
 
-**pyenv 05/08/2016**
+**pyenv 20160726**
 
 [pyenv](https://github.com/yyuu/pyenv) allows users to deploy multiple versions of Python within thier own directory, and to switch between these versions.
 
@@ -222,11 +242,17 @@ eval "$(pyenv virtualenv-init -)"
 ```
 
 ```
-$ source use-pyenv.sh
-$ pyenv update
-$ pyenv install -l
-$ pyenv install 2.7.6
-$ pyenv install 3.4.0
+source use-pyenv.sh
+pyenv update
+pyenv --version
+```
+```
+pyenv 20160726
+```
+```
+pyenv install -l
+pyenv install 2.7.6
+pyenv install 3.4.0
 ```
 
 Ubuntu package pre-requisites can be assumed to have been installed via Anaconda.
@@ -318,21 +344,34 @@ which has been [noted by others](https://github.com/python-pillow/Pillow/issues/
 
 ## Summary of deployment environments
 
-This summarises the environments into which recipy was deployed. The default package location for each Python version was used, except for the virtualenv environments where recipy was installed into a virtualenv in the user's local directory.
+This summarises the environments into which recipy was deployed, which are described in the following sections. The default package location for each Python version was used, except for the virtualenv and virtualenvwrapper environments where recipy was installed into a virtual environment in the user's local directory.
 
-| Operating System         | Python                     |
-| ------------------------ | -------------------------- |
-| Windows 7 Enterprise SP1 |                            |
-|                          | 3.5.2 (Anaconda 4.1.1)     |
-| Ubuntu 14.04.3 LTS       |                            |
-|                          | 2.7.6                      |
-|                          | 3.4.0                      |
-|                          | 2.7.6 + virtualenv 15.0.2) |
-|                          | 3.4.0 + virtualenv 15.0.2) |
-| Ubuntu 14.04.3 LTS       |                            |
-|                          | 3.5.2 (Anaconda 4.1.1)     |
-|                          | 2.7.4 (pyenv 05/08/2016)   |
-|                          | 3.4.0 (pyenv 05/08/2016)   |
+| Operating System         | Python                          | Deployed |
+| ------------------------ | ------------------------------- | -------- |
+| Windows 7 Enterprise SP1 |                                 |          |
+|                          | 3.5.2 (Anaconda 4.1.1)          | Yes      |
+| Ubuntu 14.04.3 LTS       |                                 |          |
+| (default Python users)   |                                 |          |
+|                          | 2.7.6                           | Yes      |
+|                          | 3.4.3                           | Yes      |
+|                          | 2.7.6 + virtualenv 15.0.2       |          |
+|                          | 3.4.3 + virtualenv 15.0.2       | Yes      |
+|                          | 2.7.6 + virtualenvwrapper 4.7.1 |          |
+|                          | 3.4.3 + virtualenvwrapper 4.7.1 | Yes      |
+| Ubuntu 14.04.3 LTS       |                                 |          |
+| (local Python users)     |                                 |          |
+|                          | 3.5.2 (Anaconda 4.1.1)          | Yes      |
+|                          | 2.7.4 (pyenv 20160726)          |          |
+|                          | 3.4.0 (pyenv 20160726)          | Yes      |
+
+Possible environments for future deployments include:
+
+* Pre-installed Python on Mac OS X.
+* Current [production releases](http://legacy.python.org/download/releases/) of Python 3.4.0 and 2.7.6 for Mac OS X and Windows.
+* Anaconda 4.1.1 for Mac OS X.
+* Enthought [Canopy](https://www.enthought.com/products/canopy/) 1.7.4 for Windows, Linux and Mac. Canopy is a scientific Python bundle with Python 2.7.11 and 200+ Python packages including numpy, pandas, matplotlib, Pillow, scikit-learn, scikit-image, GDAL (of the packages logged by recipy, only NiBabel is not present).
+* pyenv [deployment on Mac OS X](https://github.com/yyuu/pyenv#homebrew-on-mac-os-x) via the [HomeBrew](http://brew.sh/) package manager.
+* [conda](http://conda.pydata.org/docs/) 4.1. conda is both a package manager and, like virtualenv, a virtual environment manager. It can be used with Python 2.7, 3.4 or 3.5 under Windows, Linux and Mac. Unlike virtualenv, conda can be used to create virtual environments if using Anaconda.
 
 ---
 
@@ -444,7 +483,7 @@ recipy gui
 
 A browser appears.
 
-**Issue** The searches did not work. I tried it using `mjj`, `file-import.csv`, `C:\Users\mjj\deployment\file` and for each got a `HTTP 500 Interal Server Error`.
+**Issue** The searches did not work. I tried it using `mjj`, `file-import.csv`, `C:\Users\mjj\deployment\file` for Windows and `/home/ubuntu/deployment/file` for Ubuntu and for each got a `HTTP 500 Interal Server Error`.
 
 **Suggestion** Provide examples of search strings in the documentation.
 
@@ -802,7 +841,7 @@ git log -1 --format="%ai %H"
 python setup.py install
 ```
 
-The previous steps were re-run. Only information on where commands, outputs or behaviour deviated from the run above, and issues and suggestions arising are documented.
+The previous steps were re-run. Only information on where commands, outputs or behaviour deviated from the run above (i.e. commands succeeded where they formerly failed or vice versa), and issues and suggestions arising are documented.
 
 ```
 pip freeze | grep recipy
@@ -948,7 +987,7 @@ Traceback (most recent call last):
 TypeError: datetime.datetime(2016, 8, 12, 8, 49, 22) is not JSON serializable
 ```
 
-**Issue** Under Windows `recipy latest -j` and `recipy search -i 5f551f52-2e4b-429e-bd4e-0a22ae12f19 -j` both raise `TypeError: datetime.datetime(2016, 8, 12, 8, 49, 22) is not JSON serializable` using Git Bash and Anaconda Python prompts.
+**Issue** `recipy latest -j` and `recipy search -i 5f551f52-2e4b-429e-bd4e-0a22ae12f19 -j` both raise `TypeError: datetime.datetime(2016, 8, 12, 8, 49, 22) is not JSON serializable` using Git Bash and Anaconda Python prompts in Windows, and default Python 2.7.6 in Ubuntu 14.04.3 LTS.
 
 ```
 recipy annotate
@@ -971,22 +1010,27 @@ recipy run inserted, with ID 02c4d038-6934-4057-9c85-41d717ab6052
 Traceback (most recent call last):
   File "check-recipy-open.py", line 2, in <module>
     with recipy.open('file-open.txt', 'w') as f:
-  File "C:\Users\mjj\Anaconda3\lib\site-packages\recipy-0.2.3-py3.5.egg\recipy\u
-tils.py", line 20, in open
+  File "C:\Users\mjj\Anaconda3\lib\site-packages\recipy-0.2.3-py3.5.egg\recipy\utils.py", line 20, in open
     mode = kwargs['mode']
 KeyError: 'mode'
 ```
+
+**Issue** `with recipy.open('file-open.txt', 'w') as f:` gives a `KeyError: 'mode'` error.
 
 Edit `check-recipy-open.py` and change:
 
 ```
 with recipy.open('file-open.txt', 'w') as f:
 ```
+
 to
+
 ```
 with recipy.open('file-open.txt', mode='w') as f:
 ```
+
 so that the `mode` parameter is named.
+
 ```
 python check-recipy-open.py
 ```
@@ -1019,6 +1063,8 @@ in _read
 ValueError: I/O operation on closed file.
 ```
 
+**Issue** `with recipy.open('file-open.txt', mode='w') as f:` gives an `ValueError: I/O operation on closed file` error.
+
 **Issue** `recipy.open` does not seem to support the same signature as Python `open`. I would expect it would support the same signature.
 
 Uninstall:
@@ -1034,130 +1080,694 @@ pip freeze | grep recipy
 ```
 ```
 
-### Deployment of recipy package 0.2.3 under other environments
+---
 
-The above steps were run on the other environments. Only information on where commands, outputs or behaviour deviated from the run above, and issues and suggestions arising are documented.
+## Install recipy under other environments
 
-### Install recipy latest version under other environments
+The previous steps were re-run under the other environments. Only information on where commands, outputs or behaviour deviated from the run above (i.e. commands succeeded where they formerly failed or vice versa), and issues and suggestions arising are documented.
 
-The above steps were run on the other environments. Only information on where commands, outputs or behaviour deviated from the run above, and issues and suggestions arising are documented.
+### Ubuntu 14.04.3 LTS + 2.7.6
 
-**TODO**
+**recipy package 2.3.0**
 
 ```
-python --version
-pip install recipy
-pip freeze | grep recipy
-recipy --version
-mkdir deployment
-cd deployment
-Copy scripts to deployment/
+sudo pip install recipy
+```
+
+**Suggestion** Document that, if default/system-wide Python distributions are being used on Linux then `sudo` access is required when running `pip`.
+
+```
+cat /usr/local/bin/recipy
 ```
 ```
-python check-recipy-import.py
-recipy search file-import.csv
-recipy gui
-* Run searches
-mjj
-file-import.csv
-C:\Users\mjj\deployment\file
-* Click View details
-* Click Save as JSON
-cat ../Downloads/runs.json
-* Enter Notes: "This was Mike's first use of recipy."
-* Click Save notes
-* Click Save as JSON
-cat ../Downloads/runs.json
-python check-recipy-import.py
-recipy search file-import.csv
-recipy search file-import.csv --all
-recipy latest
-recipy latest -j
-recipy search -i 5f551f52-2e4b-429e-bd4e-0a22ae12f198
-recipy search -i 5f551f52-2e4b-429e-bd4e-0a22ae12f19
-recipy search -i 5f551f52-2e4b-429e-bd4e-0a22ae12f19 -j
-recipy search -r ".*ile.*c.*"
-recipy search -f "ile"
-recipy search -f "il..c"
+#!/usr/bin/python
+```
+
+Script uses default Python, Python 2.7.6.
+
+```
 recipy annotate
-EDITOR=notepad.exe
-recipy annotate
-export EDITOR=notepad.exe
-recipy annotate
-cd
-recipy search C:/Users/mjj/deployment/file-import.csv
-mv deployment tmp
-recipy search C:/Users/mjj/deployment/file-import.csv
-mv tmp deployment
 ```
 ```
-cd deployment/
-python -m recipy check-recipy.py
+sh: 1: /tmp/tmpEk9ykM: Permission denied
+No annotation entered, exiting.
+```
+```
+ls -l /tmp/tmpEk9ykM 
+```
+```
+-rw------- 1 ubuntu ubuntu 475 Aug 12 03:43 /tmp/tmpEk9ykM
+```
+```
+echo $EDITOR
+EDITOR=nano
+recipy annotate
+```
+```
+sh: 1: /tmp/tmpEk9ykM: Permission denied
+No annotation entered, exiting.
+```
+```
+export EDITOR=nano
+recipy annotate
+```
+
+**Suggestion** Document need for `EDITOR` variable to be set.
+
+Enter `This is Mike's first annotation`.
+
+```
 recipy latest
 ```
+```
+...
+Notes:
+This is Mike's first annotation.
+...
+```
+```
+recipy annotate
+```
+
+Enter `This is Mike's second annotation`.
+
+```
+recipy latest
+```
+```
+...
+Notes:
+This is Mike's second annotation.
+...
+```
+
+**Suggestion** Document that only the latest run can be annotated via `recipy annotate`.
+
+**Suggestion** Document that the notes are completely overwritten, so if the user wants to retain their current notes they should copy them from the lower-half of the editor.
+
+**Suggestion** Have editor show current notes so these can be edited without the need for the user to copy then as suggested above.
+
+```
+find /usr/local -name "*recipy*"
+```
+```
+/usr/local/lib/python2.7/dist-packages/recipyCmd
+/usr/local/lib/python2.7/dist-packages/recipyCmd/recipycmd.pyc
+/usr/local/lib/python2.7/dist-packages/recipyCmd/recipycmd.py
+/usr/local/lib/python2.7/dist-packages/recipyGui
+/usr/local/lib/python2.7/dist-packages/recipyGui/tests/test_recipyGui.pyc
+/usr/local/lib/python2.7/dist-packages/recipyGui/tests/test_recipyGui.py
+/usr/local/lib/python2.7/dist-packages/recipy-0.2.3.egg-info
+/usr/local/lib/python2.7/dist-packages/recipy
+/usr/local/lib/python2.7/dist-packages/recipyCommon
+/usr/local/bin/recipy
+```
+```
+sudo pip uninstall recipy
+```
+```
+find /usr/local -name "*recipy*"
+```
+
+**recipy latest version*
+
+```
+sudo python setup.py install
+```
+
+**Suggestion** Document that, if default/system-wide Python distributions are being used on Linux then `sudo` access is required when running `python setup.py install`.
+
+```
+$ recipy search file-import.csv
+```
+```
+...shows data...
+```
+
 ```
 python check-recipy-open.py
-recipy latest
 ```
 ```
-git init
-git config --global user.name "Mike Jackson"
-git config --global user.email "michaelj@epcc.ed.ac.uk"
-git add *.py
-git commit -m "Added recipy scripts"
-python check-recipy-import.py
-recipy latest
-Edit check-recipy-import.py and change first range to be range(5,9)
-python check-recipy-import.py
-cat file-import.csv
-git commit -m "Changed check-recipy-import.py range to 5,9" .
-recipy latest
-recipy latest --diff
-python check-recipy-import.py
-recipy latest --diff
-cd ..
-git clone C:/Users/mjj/deployment deployment-clone
-cd deployment-clone/
-python check-recipy-import.py
-recipy latest
+recipy run inserted, with ID 817359aa-69ef-4d33-a062-026f343231c4
+/usr/local/lib/python2.7/dist-packages/recipy-0.2.3-py2.7.egg/recipyCommon/libraryversions.py:30: UserWarning: requesting version of a module that has not been imported (recipy.open)
+  'imported ({})'.format(modulename))
+Traceback (most recent call last):
+  File "check-recipy-open.py", line 2, in <module>
+    with recipy.open('file-open.txt', 'w') as f:
+  File "/usr/local/lib/python2.7/dist-packages/recipy-0.2.3-py2.7.egg/recipy/utils.py", line 35, in open
+    log_output(args[0], 'recipy.open')
+  File "/usr/local/lib/python2.7/dist-packages/recipy-0.2.3-py2.7.egg/recipy/log.py", line 177, in log_output
+    db.update(append("libraries", get_version(source), no_duplicates=True), eids=[RUN_ID])
+  File "/usr/local/lib/python2.7/dist-packages/tinydb/database.py", line 377, in update
+    cond, eids
+  File "/usr/local/lib/python2.7/dist-packages/tinydb/database.py", line 230, in process_elements
+    data = self._read()
+  File "/usr/local/lib/python2.7/dist-packages/tinydb/database.py", line 277, in _read
+    return self._storage.read()
+  File "/usr/local/lib/python2.7/dist-packages/tinydb/database.py", line 31, in read
+    raw_data = (self._storage.read() or {})[self._table_name]
+  File "/usr/local/lib/python2.7/dist-packages/tinydb_serialization/__init__.py", line 139, in read
+    data = self.storage.read()
+  File "/usr/local/lib/python2.7/dist-packages/tinydb/storages.py", line 93, in read
+    self._handle.seek(0, 2)
+ValueError: I/O operation on closed file
 ```
-```
-cd
-find Anaconda3/ -name "*recipy*"
-pip uninstall recipy
-OR
-rm -rf Anaconda3/Lib/site-packages/recipy-0.2.3-py3.5.egg
-rm -f Anaconda3/Scripts/recipy-script.py
-rm -f Anaconda3/Scripts/recipy.exe
 
-find Anaconda3/ -name "*recipy*"
+**Issue** `with recipy.open('file-open.txt', 'w') as f:` gives an `ValueError: I/O operation on closed file` error under Ubuntu 14.04.3 LTS and Python 2.7.6 and recipy latest version. This differs from Ubuntu 14.04.3 LTS and Python 3.4.3 and Windows 7 Enterprise SP1 + Python 3.5.2 (Anaconda 4.1.1) which give `KeyError: 'mode'`, and only give this current error if `mode='w'` is provided.
+
+```
+find /usr/local -name "*recipy*"
+```
+```
+/usr/local/lib/python2.7/dist-packages/recipy-0.2.3-py2.7.egg
+/usr/local/lib/python2.7/dist-packages/recipy-0.2.3-py2.7.egg/recipyCmd
+/usr/local/lib/python2.7/dist-packages/recipy-0.2.3-py2.7.egg/recipyCmd/recipycmd.py
+/usr/local/lib/python2.7/dist-packages/recipy-0.2.3-py2.7.egg/recipyCmd/__pycache__/recipycmd.cpython-34.pyc
+/usr/local/lib/python2.7/dist-packages/recipy-0.2.3-py2.7.egg/recipyGui
+/usr/local/lib/python2.7/dist-packages/recipy-0.2.3-py2.7.egg/recipyGui/tests/__pycache__/test_recipyGui.cpython-34.pyc
+/usr/local/lib/python2.7/dist-packages/recipy-0.2.3-py2.7.egg/recipyGui/tests/test_recipyGui.py
+/usr/local/lib/python2.7/dist-packages/recipy-0.2.3-py2.7.egg/recipy
+/usr/local/lib/python2.7/dist-packages/recipy-0.2.3-py2.7.egg/recipyCommon
+```
+```
+sudo rm -rf /usr/local/lib/python2.7/dist-packages/recipy-0.2.3-py2.7.egg
+sudo rm -f /usr/local/bin/recipy
+find /usr/local -name "*recipy*"
+```
+```
+```
+
+### Ubuntu 14.04.3 LTS + 3.4.3
+
+For this run, `python3` and `pip3` were used instead of `python` and `pip`.
+
+**recipy package 2.3.0**
+
+```
+python3 --version
+```
+```
+Python 3.4.3
+```
+```
+sudo pip3 install recipy
+```
+
+**Suggestion** Document that, if default/system-wide Python 2 and 3 distributions co-exist on Linux, then the user may need to use `pip3` and `python3`.
+
+```
+cat /usr/local/bin/recipy
+```
+```
+#!/usr/bin/python3
+```
+
+Script uses Python 3.4.3.
+
+**recipy latest version**
+
+```
+sudo python3 setup.py install
+```
+
+**Suggestion** Document that, if default/system-wide Python distributions are being used on Linux then `sudo` access is required when running `python3 setup.py install`.
+
+```
+find /usr/local -name "*recipy*"
+```
+```
+/usr/local/lib/python3.4/dist-packages/recipy-0.2.3-py3.4.egg
+/usr/local/lib/python3.4/dist-packages/recipy-0.2.3-py3.4.egg/recipyCmd
+/usr/local/lib/python3.4/dist-packages/recipy-0.2.3-py3.4.egg/recipyCmd/recipycmd.py
+/usr/local/lib/python3.4/dist-packages/recipy-0.2.3-py3.4.egg/recipyCmd/__pycache__/recipycmd.cpython-34.pyc
+/usr/local/lib/python3.4/dist-packages/recipy-0.2.3-py3.4.egg/recipyGui
+/usr/local/lib/python3.4/dist-packages/recipy-0.2.3-py3.4.egg/recipyGui/tests/__pycache__/test_recipyGui.cpython-34.pyc
+/usr/local/lib/python3.4/dist-packages/recipy-0.2.3-py3.4.egg/recipyGui/tests/test_recipyGui.py
+/usr/local/lib/python3.4/dist-packages/recipy-0.2.3-py3.4.egg/recipy
+/usr/local/lib/python3.4/dist-packages/recipy-0.2.3-py3.4.egg/recipyCommon
+```
+```
+sudo rm -rf /usr/local/lib/python3.4/dist-packages/recipy-0.2.3-py3.4.egg
+sudo rm -f /usr/local/bin/recipy
+find /usr/local -name "*recipy*"
+```
+```
+pip3 freeze | grep recipy
+```
+```
+```
+
+### Ubuntu 14.04.3 LTS + 3.4.3 + virtualenv 15.0.2
+
+Create a new virtualenv environment:
+
+```
+mkdir recipy-venv
+cd recipy-venv
+virtualenv venv --python=/usr/bin/python3 --system-site-packages
+```
+
+Activate virtualenv:
+
+```
+source recipy-venv/venv/bin/activate
+which python
+```
+```
+/home/ubuntu/recipy-venv/venv/bin/python
+```
+```
+python --version
+```
+```
+Python 3.4.3
+```
+```
+which pip
+```
+```
+/home/ubuntu/recipy-venv/venv/bin/pip
+```
+```
+pip --version
+```
+```
+pip 8.1.2 from /home/ubuntu/recipy-venv/venv/lib/python3.4/site-packages (python 3.4)
+```
+
+**recipy package 2.3.0**
+
+```
+find recipy-venv/ -name "*recipy*"
+```
+```
+recipy-venv/
+recipy-venv/venv/lib/python3.4/site-packages/recipyCmd
+recipy-venv/venv/lib/python3.4/site-packages/recipyCmd/recipycmd.py
+recipy-venv/venv/lib/python3.4/site-packages/recipyCmd/__pycache__/recipycmd.cpython-34.pyc
+recipy-venv/venv/lib/python3.4/site-packages/recipyGui
+recipy-venv/venv/lib/python3.4/site-packages/recipyGui/tests/__pycache__/test_recipyGui.cpython-34.pyc
+recipy-venv/venv/lib/python3.4/site-packages/recipyGui/tests/test_recipyGui.py
+recipy-venv/venv/lib/python3.4/site-packages/recipy
+recipy-venv/venv/lib/python3.4/site-packages/recipyCommon
+recipy-venv/venv/lib/python3.4/site-packages/recipy-0.2.3.dist-info
+recipy-venv/venv/bin/recipy
+```
+```
+pip uninstall recipy
+```
+```
+find recipy-venv/ -name "*recipy*"
+```
+```
+```
+
+Deactivate virtualenv:
+
+```
+deactivate
+```
+
+**recipy latest version**
+
+```
+source recipy-venv/venv/bin/activate
+```
+
+```
+find recipy-venv/ -name "*recipy*"
+```
+```
+recipy-venv/
+recipy-venv/venv/lib/python3.4/site-packages/recipy-0.2.3-py3.4.egg
+recipy-venv/venv/lib/python3.4/site-packages/recipy-0.2.3-py3.4.egg/recipyCmd
+recipy-venv/venv/lib/python3.4/site-packages/recipy-0.2.3-py3.4.egg/recipyCmd/recipycmd.py
+recipy-venv/venv/lib/python3.4/site-packages/recipy-0.2.3-py3.4.egg/recipyCmd/__pycache__/recipycmd.cpython-34.pyc
+recipy-venv/venv/lib/python3.4/site-packages/recipy-0.2.3-py3.4.egg/recipyGui
+recipy-venv/venv/lib/python3.4/site-packages/recipy-0.2.3-py3.4.egg/recipyGui/tests/__pycache__/test_recipyGui.cpython-34.pyc
+recipy-venv/venv/lib/python3.4/site-packages/recipy-0.2.3-py3.4.egg/recipyGui/tests/test_recipyGui.py
+recipy-venv/venv/lib/python3.4/site-packages/recipy-0.2.3-py3.4.egg/recipy
+recipy-venv/venv/lib/python3.4/site-packages/recipy-0.2.3-py3.4.egg/recipyCommon
+recipy-venv/venv/bin/recipy
+```
+```
+rm -rf recipy-venv/venv/lib/python3.4/site-packages/recipy-0.2.3-py3.4.egg
+rm -f recipy-venv/venv/bin/recipy
+```
+```
+find recipy-venv/ -name "*recipy*"
+```
+```
+recipy-venv/
+```
+
+Deactivate virtualenv:
+
+```
+deactivate
+```
+
+### Ubuntu 14.04.3 LTS + 3.4.3 + virtualenv 15.0.2 + virtualenvwrapper
+
+Create a new virtualenv environment:
+
+```
+export WORKON_HOME=~/Envs
+mkdir -p $WORKON_HOME
+source /usr/local/bin/virtualenvwrapper.sh
+mkvirtualenv recipy-wrapper-env --python=/usr/bin/python3 --system-site-packages
+```
+
+Activate virtualenv:
+
+```
+workon recipy-wrapper-env
+```
+```
+python --version
+```
+```
+Python 3.4.3
+```
+
+Only the following commands were run:
+
+```
+pip install recipy
+recipy --version
+python check-recipy-import.py
+python -m check-recipy.py
+python check-recipy-open.py
+recipy latest
+recipy gui
+```
+
+**recipy package 2.3.0**
+
+```
+find Envs/ -name "*recipy*"
+```
+```
+Envs/recipy-wrapper-env
+Envs/recipy-wrapper-env/lib/python3.4/site-packages/recipyCmd
+Envs/recipy-wrapper-env/lib/python3.4/site-packages/recipyCmd/recipycmd.py
+Envs/recipy-wrapper-env/lib/python3.4/site-packages/recipyCmd/__pycache__/recipycmd.cpython-34.pyc
+Envs/recipy-wrapper-env/lib/python3.4/site-packages/recipyGui
+Envs/recipy-wrapper-env/lib/python3.4/site-packages/recipyGui/tests/__pycache__/test_recipyGui.cpython-34.pyc
+Envs/recipy-wrapper-env/lib/python3.4/site-packages/recipyGui/tests/test_recipyGui.py
+Envs/recipy-wrapper-env/lib/python3.4/site-packages/recipy
+Envs/recipy-wrapper-env/lib/python3.4/site-packages/recipyCommon
+Envs/recipy-wrapper-env/lib/python3.4/site-packages/recipy-0.2.3.dist-info
+Envs/recipy-wrapper-env/bin/recipy
+```
+```
+pip uninstall recipy
+```
+```
+find Envs/ -name "*recipy*"
+```
+```
+Envs/recipy-wrapper-env
+```
+
+**recipy latest version**
+
+```
+find Envs/ -name "*recipy*"
+```
+```
+Envs/recipy-wrapper-env
+Envs/recipy-wrapper-env/lib/python3.4/site-packages/recipy-0.2.3-py3.4.egg
+Envs/recipy-wrapper-env/lib/python3.4/site-packages/recipy-0.2.3-py3.4.egg/recipyCmd
+Envs/recipy-wrapper-env/lib/python3.4/site-packages/recipy-0.2.3-py3.4.egg/recipyCmd/recipycmd.py
+Envs/recipy-wrapper-env/lib/python3.4/site-packages/recipy-0.2.3-py3.4.egg/recipyCmd/__pycache__/recipycmd.cpython-34.pyc
+Envs/recipy-wrapper-env/lib/python3.4/site-packages/recipy-0.2.3-py3.4.egg/recipyGui
+Envs/recipy-wrapper-env/lib/python3.4/site-packages/recipy-0.2.3-py3.4.egg/recipyGui/tests/__pycache__/test_recipyGui.cpython-34.pyc
+Envs/recipy-wrapper-env/lib/python3.4/site-packages/recipy-0.2.3-py3.4.egg/recipyGui/tests/test_recipyGui.py
+Envs/recipy-wrapper-env/lib/python3.4/site-packages/recipy-0.2.3-py3.4.egg/recipy
+Envs/recipy-wrapper-env/lib/python3.4/site-packages/recipy-0.2.3-py3.4.egg/recipyCommon
+Envs/recipy-wrapper-env/bin/recipy
+```
+```
+rm -rf Envs/recipy-wrapper-env/lib/python3.4/site-packages/recipy-0.2.3-py3.4.egg
+rm -f Envs/recipy-wrapper-env/bin/recipy
+```
+```
+find Envs/ -name "*recipy*"
+```
+```
+Envs/recipy-wrapper-env
+```
+
+### Ubuntu 14.04.3 LTS + 3.5.2 + Anaconda 4.1.1
+
+Configure use of Anaconda 4.1.1:
+
+```
+source use-anaconda3.sh 
+which python
+```
+```
+/home/ubuntu/anaconda3/bin/python
+```
+```
+python --version
+```
+```
+Python 3.5.2 :: Anaconda 4.1.1 (64-bit)
+```
+```
+which pip
+```
+```
+/home/ubuntu/anaconda3/bin/pip
+```
+```
+pip --version
+```
+```
+pip 8.1.2 from /home/ubuntu/anaconda3/lib/python3.5/site-packages (python 3.5)
+```
+
+**recipy package 2.3.0**
+
+```
+find anaconda3/ -name "*recipy*"
+```
+```
+anaconda3/lib/python3.5/site-packages/recipy
+anaconda3/lib/python3.5/site-packages/recipyGui
+anaconda3/lib/python3.5/site-packages/recipyGui/tests/__pycache__/test_recipyGui.cpython-35.pyc
+anaconda3/lib/python3.5/site-packages/recipyGui/tests/test_recipyGui.py
+anaconda3/lib/python3.5/site-packages/recipyCmd
+anaconda3/lib/python3.5/site-packages/recipyCmd/__pycache__/recipycmd.cpython-35.pyc
+anaconda3/lib/python3.5/site-packages/recipyCmd/recipycmd.py
+anaconda3/lib/python3.5/site-packages/recipyCommon
+anaconda3/lib/python3.5/site-packages/recipy-0.2.3.dist-info
+anaconda3/bin/recipy
+```
+```
+pip uninstall recipy
+find anaconda3/ -name "*recipy*"
+```
+```
+```
+
+**recipy latest version**
+
+```
+find anaconda3/ -name "*recipy*"
+```
+```
+anaconda3/lib/python3.5/site-packages/recipy-0.2.3-py3.5.egg
+anaconda3/lib/python3.5/site-packages/recipy-0.2.3-py3.5.egg/recipy
+anaconda3/lib/python3.5/site-packages/recipy-0.2.3-py3.5.egg/recipyGui
+anaconda3/lib/python3.5/site-packages/recipy-0.2.3-py3.5.egg/recipyGui/tests/__pycache__/test_recipyGui.cpython-35.pyc
+anaconda3/lib/python3.5/site-packages/recipy-0.2.3-py3.5.egg/recipyGui/tests/test_recipyGui.py
+anaconda3/lib/python3.5/site-packages/recipy-0.2.3-py3.5.egg/recipyCmd
+anaconda3/lib/python3.5/site-packages/recipy-0.2.3-py3.5.egg/recipyCmd/__pycache__/recipycmd.cpython-35.pyc
+anaconda3/lib/python3.5/site-packages/recipy-0.2.3-py3.5.egg/recipyCmd/recipycmd.py
+anaconda3/lib/python3.5/site-packages/recipy-0.2.3-py3.5.egg/recipyCommon
+anaconda3/bin/recipy
+```
+```
+rm -rf anaconda3/lib/python3.5/site-packages/recipy-0.2.3-py3.5.egg
+rm -f anaconda3/bin/recipy
+```
+```
+find anaconda3/ -name "*recipy*"
+```
+```
+```
+
+### Ubuntu 14.04.3 LTS + 3.4.0 + pyenv 20160726
+
+Configure use of pyenv:
+
+```
+source use-anaconda3.sh 
+pyenv local 3.4.0
+which python
+```
+```
+/home/ubuntu/.pyenv/shims/python
+```
+```
+python --version
+```
+```
+Python 3.4.0
+```
+```
+which pip
+```
+```
+/home/ubuntu/.pyenv/shims/pip
+```
+```
+pip --version
+```
+```
+pip 1.5.4 from /home/ubuntu/.pyenv/versions/3.4.0/lib/python3.4/site-packages (python 3.4)
+```
+
+**recipy package 2.3.0**
+
+```
+find .pyenv -name "*recipy*"
+```
+```
+.pyenv/shims/recipy
+.pyenv/versions/3.4.0/lib/python3.4/site-packages/recipy
+.pyenv/versions/3.4.0/lib/python3.4/site-packages/recipyGui
+.pyenv/versions/3.4.0/lib/python3.4/site-packages/recipyGui/tests/__pycache__/test_recipyGui.cpython-34.pyc
+.pyenv/versions/3.4.0/lib/python3.4/site-packages/recipyGui/tests/test_recipyGui.py
+.pyenv/versions/3.4.0/lib/python3.4/site-packages/recipyCmd
+.pyenv/versions/3.4.0/lib/python3.4/site-packages/recipyCmd/__pycache__/recipycmd.cpython-34.pyc
+.pyenv/versions/3.4.0/lib/python3.4/site-packages/recipyCmd/recipycmd.py
+.pyenv/versions/3.4.0/lib/python3.4/site-packages/recipyCommon
+.pyenv/versions/3.4.0/lib/python3.4/site-packages/recipy-0.2.3-py3.4.egg-info
+.pyenv/versions/3.4.0/bin/recipy
+```
+```
+pip uninstall recipy
+```
+```
+find .pyenv -name "*recipy*"
+```
+```
+```
+
+**recipy latest version**
+
+```
 pip freeze | grep recipy
 ```
 ```
-rm -rf ~/.recipy
+recipy==0.2.3
+```
+```
+recipy --version
+```
+```
+bash: /home/ubuntu/.pyenv/shims/recipy: No such file or directory
+```
+```
+which recipy
+```
+```
+```
+```
+find .pyenv -name "*recipy*"
+```
+```
+.pyenv/versions/3.4.0/lib/python3.4/site-packages/recipy-0.2.3-py3.4.egg
+.pyenv/versions/3.4.0/lib/python3.4/site-packages/recipy-0.2.3-py3.4.egg/recipy
+.pyenv/versions/3.4.0/lib/python3.4/site-packages/recipy-0.2.3-py3.4.egg/recipyGui
+.pyenv/versions/3.4.0/lib/python3.4/site-packages/recipy-0.2.3-py3.4.egg/recipyGui/tests/__pycache__/test_recipyGui.cpython-34.pyc
+.pyenv/versions/3.4.0/lib/python3.4/site-packages/recipy-0.2.3-py3.4.egg/recipyGui/tests/test_recipyGui.py
+.pyenv/versions/3.4.0/lib/python3.4/site-packages/recipy-0.2.3-py3.4.egg/recipyCmd
+.pyenv/versions/3.4.0/lib/python3.4/site-packages/recipy-0.2.3-py3.4.egg/recipyCmd/__pycache__/recipycmd.cpython-34.pyc
+.pyenv/versions/3.4.0/lib/python3.4/site-packages/recipy-0.2.3-py3.4.egg/recipyCmd/recipycmd.py
+.pyenv/versions/3.4.0/lib/python3.4/site-packages/recipy-0.2.3-py3.4.egg/recipyCommon
+.pyenv/versions/3.4.0/bin/recipy
 ```
 
-**TODO**
+Compare to locations of recipy package installed using `pip`:
 
-Ubuntu 14.04.3 LTS + 2.7.6
+```
+.pyenv/shims/recipy
+.pyenv/versions/3.4.0/lib/python3.4/site-packages/recipy
+.pyenv/versions/3.4.0/lib/python3.4/site-packages/recipyGui
+.pyenv/versions/3.4.0/lib/python3.4/site-packages/recipyGui/tests/__pycache__/test_recipyGui.cpython-34.pyc
+.pyenv/versions/3.4.0/lib/python3.4/site-packages/recipyGui/tests/test_recipyGui.py
+.pyenv/versions/3.4.0/lib/python3.4/site-packages/recipyCmd
+.pyenv/versions/3.4.0/lib/python3.4/site-packages/recipyCmd/__pycache__/recipycmd.cpython-34.pyc
+.pyenv/versions/3.4.0/lib/python3.4/site-packages/recipyCmd/recipycmd.py
+.pyenv/versions/3.4.0/lib/python3.4/site-packages/recipyCommon
+.pyenv/versions/3.4.0/lib/python3.4/site-packages/recipy-0.2.3-py3.4.egg-info
+.pyenv/versions/3.4.0/bin/recipy
+```
 
-Ubuntu 14.04.3 LTS + 3.4.0
+The difference is `.pyenv/shims/recipy`. StackOverflow [Pyenv shim not created when installing package using setup.py](http://stackoverflow.com/questions/29753592/pyenv-shim-not-created-when-installing-package-using-setup-py) comments thatL
 
----
+> Versions of pyenv before v20141211 do not automatically "rehash" (that is, update shims) when a new package is installed. To get pyenv to automatically rehash, either upgrade to a newer version of pyenv, or install the pyenv-pip-refresh plugin.
+> To rehash manually, use this command for bash:
+> `pyenv rehash && hash -r`
 
-Ubuntu 14.04.3 LTS + 2.7.6 + virtualenv 15.0.2)
+My pyenv is newer than this:
 
-Ubuntu 14.04.3 LTS + 3.4.0 + virtualenv 15.0.2)
+```
+pyenv --version
+```
+```
+pyenv 20160726
+```
 
----
+Try the manual solution:
 
-Ubuntu 14.04.3 LTS + 3.5.2 (Anaconda 4.1.1)
+```
+pyenv rehash && hash -r
+which recipy
+```
+```
+/home/ubuntu/.pyenv/shims/recipy
+```
+```
+recipy --version
+```
+```
+recipy v0.2.3
+```
 
----
+**Issue** `python setup.py install` and pyenv do not make the `recipy` executable available. Document the workaround command `pyenv rehash && hash -r` in the short-term and track down a possible automated solution in the longer term.
 
-Ubuntu 14.04.3 LTS + 2.7.4 (pyenv 05/08/2016)
-
-Ubuntu 14.04.3 LTS + 3.4.0 (pyenv 05/08/2016)
+```
+find .pyenv -name "*recipy*"
+```
+```
+.pyenv/shims/recipy
+.pyenv/versions/3.4.0/lib/python3.4/site-packages/recipy-0.2.3-py3.4.egg
+.pyenv/versions/3.4.0/lib/python3.4/site-packages/recipy-0.2.3-py3.4.egg/recipy
+.pyenv/versions/3.4.0/lib/python3.4/site-packages/recipy-0.2.3-py3.4.egg/recipyGui
+.pyenv/versions/3.4.0/lib/python3.4/site-packages/recipy-0.2.3-py3.4.egg/recipyGui/tests/__pycache__/test_recipyGui.cpython-34.pyc
+.pyenv/versions/3.4.0/lib/python3.4/site-packages/recipy-0.2.3-py3.4.egg/recipyGui/tests/test_recipyGui.py
+.pyenv/versions/3.4.0/lib/python3.4/site-packages/recipy-0.2.3-py3.4.egg/recipyCmd
+.pyenv/versions/3.4.0/lib/python3.4/site-packages/recipy-0.2.3-py3.4.egg/recipyCmd/__pycache__/recipycmd.cpython-34.pyc
+.pyenv/versions/3.4.0/lib/python3.4/site-packages/recipy-0.2.3-py3.4.egg/recipyCmd/recipycmd.py
+.pyenv/versions/3.4.0/lib/python3.4/site-packages/recipy-0.2.3-py3.4.egg/recipyCommon
+.pyenv/versions/3.4.0/bin/recipy
+```
+```
+rm -f .pyenv/shims/recipy
+rm -rf .pyenv/versions/3.4.0/lib/python3.4/site-packages/recipy-0.2.3-py3.4.egg
+rm -f .pyenv/versions/3.4.0/bin/recipy
+```
+```
+find .pyenv -name "*recipy*"
+```
+```
+```
 
 ---
 
@@ -1179,54 +1789,286 @@ README.md comments that
 
 ## Other examples
 
-**TODO** Write and run one sample script per package/function recipy can log (look at the recipy source code) These can form basis of test scripts.
+**TODO** check if this information is auto-generated. If so then suggest it auto-generate a .md file for the repository (yes, an auto-generated artefact in the repository!)
 
-**Suggestion** Provide guidelines on how to use recipy in a research workflow e.g. how to use recipy and Git to record provenance and recommended ways of archiving input/output files etc.
+From `recipy gui` at http://127.0.0.1:9000/patched_modules, the packages, input and output functions logged by the current version are:
 
-**Suggestion** Provide a list of the functions for each package that recipy logs.
+pandas:
+
+* read_csv, read_table, read_excel, read_hdf, read_pickle, read_stata, read_msgpack
+* DataFrame.to_csv, DataFrame.to_excel, DataFrame.to_hdf, DataFrame.to_msgpack, DataFrame.to_stata, DataFrame.to_pickle, Panel.to_excel, Panel.to_hdf, Panel.to_msgpack, Panel.to_pickle, Series.to_csv, Series.to_hdf, Series.to_msgpack, Series.to_pickle
+
+matplotlib.pyplot:
+
+* None
+* savefig
+
+numpy:
+
+* genfromtxt, loadtxt, fromfile
+* save, savez, savez_compressed, savetxt
+
+<td>lxml.etree</td>
+parse, iterparse
+None
+
+<td>bs4</td>
+BeautifulSoup
+None
+
+gdal:
+
+* Open
+* Driver.Create, Driver.CreateCopy
+
+sklearn:
+
+* datasets.load_svmlight_file
+* datasets.dump_svmlight_file
+
+nibabel:
+
+* nifti1.Nifti1Image.from_filename, nifti2.Nifti2Image.from_filename, freesurfer.mghformat.MGHImage.from_filename, spm99analyze.Spm99AnalyzeImage.from_filename, minc1.Minc1Image.from_filename, minc2.Minc2Image.from_filename, analyze.AnalyzeImage.from_filename, parrec.PARRECImage.from_filename, spm2analyze.Spm2AnalyzeImage.from_filename
+* nifti1.Nifti1Image.to_filename, nifti2.Nifti2Image.to_filename, freesurfer.mghformat.MGHImage.to_filename, spm99analyze.Spm99AnalyzeImage.to_filename, minc1.Minc1Image.to_filename, minc2.Minc2Image.to_filename, analyze.AnalyzeImage.to_filename, parrec.PARRECImage.to_filename, spm2analyze.Spm2AnalyzeImage.to_filename
+
+**TODO** Ask where Pillow and scikit-image are. Add Suggestion that this be clarified on README.md.
+
+**TODO** Ask what bs4 and lxml.etree are. Add Suggestion that this be added to README.md.
+
+
+**TODO** Write and run one sample script for more package/function recipy can log (look at the recipy source code) These can form basis of test scripts.
+
+**Suggestion** Provide a list of the functions for each package that recipy logs. While these are visible via `recipy gui` at http://127.0.0.1:9000/patched_modules, documenting them so they can be viewed online would be useful for users and developers.
 
 **Suggestion** Develop a tool that uses reflection to traverse the functions of a package and print out the names of functions (and, if possible, their "help" information) that may be input/output functions that should be logged by recipy (e.g. functions with names such as `input/output`, `read/write`, `load/save`). This could help those who want to develop recipy wrappers for additional packages.
 
 ---
 
-### Set up virtual environments (notes to be cleaned)
+## General
 
-```
-$ virtualenv --python=/usr/bin/python3 --no-site-packages secret_ciphers
-$ mkdir ~/Envs
-```
+**Suggestion** Provide guidelines on how to use recipy in a research workflow e.g. how to use recipy and Git to record provenance and recommended ways of archiving input/output files etc.
 
-Edit ~/.bash_profile and add the lines:
-
-```
-export WORKON_HOME=~/Envs
-source /usr/local/bin/virtualenvwrapper.sh
-```
-
-Set environment:
-
-```
-$ source ~/bash_profile
-```
-
-If using virtual environments, then create a virtual environment. For example:
-
-```
-$ mkvirtualenv prov
-```
-
-```
-virtualenv -p /usr/bin/python2.6 <path/to/new/virtualenv/>
-mkvirtualenv -p python2.6 env
-python --version
-```
-
-Check version
-
-OR
-
-```
-python3 -m virtualenv venv
-```
+**TODO** Restructure foregoing into command-list, deviations for each platform, and issues (with list of versions to which each issue applied)
 
 ---
+
+# Appendix - commands run for each deployment
+
+In what follows `python3` and `pip3` were used instead of `python` and `pip` on Ubuntu 14.04.3 LTS + 3.4.3.
+
+Commands run to check Python and pip versions:
+
+```
+which python
+python --version
+
+which pip
+pip --version
+```
+
+Commands run to install recipy 0.2.3:
+
+```
+# Windows 7 Enterprise SP1 + 3.5.2 (Anaconda 4.1.1)
+# Ubuntu 14.04.3 LTS + 3.4.3 + virtualenv 15.0.2
+# Ubuntu 14.04.3 LTS + 3.4.3 + virtualenv 15.0.2 + virtualenvwrapper
+# Ubuntu 14.04.3 LTS + 3.5.2 + Anaconda 4.1.1
+# Ubuntu 14.04.3 LTS + 3.4.0 + pyenv 20160726
+pip install recipy
+
+# Ubuntu 14.04.3 LTS + 2.7.6
+sudo pip install recipy
+
+# Ubuntu 14.04.3 LTS + 3.4.3
+sudo pip3 install recipy
+
+pip freeze | grep recipy
+which recipy
+recipy --version
+```
+
+Commands run to install recipy latest version:
+
+```
+git clone https://github.com/recipy/recipy
+cd recipy
+git log -1 --format="%ai %H"
+
+# Windows 7 Enterprise SP1 + 3.5.2 (Anaconda 4.1.1)
+# Ubuntu 14.04.3 LTS + 3.4.3 + virtualenv 15.0.2
+# Ubuntu 14.04.3 LTS + 3.4.3 + virtualenv 15.0.2 + virtualenvwrapper
+# Ubuntu 14.04.3 LTS + 3.5.2 + Anaconda 4.1.1
+# Ubuntu 14.04.3 LTS + 3.4.0 + pyenv 20160726
+python setup.py install
+
+# Ubuntu 14.04.3 LTS + 2.7.6
+sudo python setup.py install
+
+# Ubuntu 14.04.3 LTS + 3.4.3
+sudo python3 setup.py install
+```
+
+`recipy` commands run:
+
+```
+recipy --version
+python check-recipy-import.py
+recipy search file-import.csv
+python check-recipy-import.py
+recipy search file-import.csv
+recipy search file-import.csv --all
+recipy latest
+recipy latest -j
+recipy search -i 5f551f52-2e4b-429e-bd4e-0a22ae12f198
+recipy search -i 5f551f52-2e4b-429e-bd4e-0a22ae12f19
+recipy search -i 5f551f52-2e4b-429e-bd4e-0a22ae12f19 -j
+recipy search -r ".*ile.*c.*"
+recipy search -f "ile"
+recipy search -f "il..c"
+
+recipy annotate
+EDITOR=notepad.exe # Windows only
+EDITOR=notepad.exe # Ubuntu only
+recipy annotate
+export EDITOR=notepad.exe # Windows only
+export EDITOR=nano # Ubuntu only
+recipy annotate
+
+python -m recipy check-recipy.py
+python check-recipy-open.py
+
+recipy gui
+```
+
+`recipy` commands to see behaviour if `deployment` directory, in which scripts have been run, no longer exists:
+
+```
+cd ..
+mv deployment tmp
+recipy search C:/Users/mjj/deployment/file-import.csv # Windows only
+recipy search /home/ubuntu/deployment/file-import.csv # Ubuntu only
+mv tmp deployment
+```
+
+`recipy` commands to see behaviour within Git repositories:
+
+```
+git init
+git config --global user.name "Mike Jackson"
+git config --global user.email "michaelj@epcc.ed.ac.uk"
+git add *.py
+git commit -m "Added recipy scripts"
+python check-recipy-import.py
+recipy latest
+
+Edit check-recipy-import.py and change first range to be range(5,9)
+
+python check-recipy-import.py
+recipy latest --diff
+git commit -m "Changed check-recipy-import.py range to 5,9" .
+recipy latest --diff
+python check-recipy-import.py
+recipy latest --diff
+
+cd ..
+git clone C:/Users/mjj/deployment deployment-clone # Windows only
+git clone /home/ubuntu/deployment/ /home/ubuntu/deployment-clone # Ubuntu only
+cd deployment-clone/
+python check-recipy-import.py
+recipy latest
+cd
+```
+
+`recipy gui` commands run:
+
+* Search for mjj, file-import.csv, C:\Users\mjj\deployment\file-import.csv (Windows), C:\\Users\\mjj\\deployment\\file-import.csv (Windows)
+* Search for ubuntu, file-import.csv, /home/ubuntu/deployment/file-import.csv (Ubuntu)
+* Click View details
+* Click Save as JSON
+* Enter Notes: `This was Mike's first use of recipy.`
+* Click Save notes
+* Click Save as JSON
+* Look at JSON files.
+
+Commands run to find recipy files, before and after uninstall:
+
+```
+# Windows 7 Enterprise SP1 + 3.5.2 (Anaconda 4.1.1)
+find Anaconda3/ -name "*recipy*"
+
+# Ubuntu 14.04.3 LTS + 2.7.6
+# Ubuntu 14.04.3 LTS + 3.4.3
+find /usr/local -name "*recipy*"
+
+# Ubuntu 14.04.3 LTS + 3.4.3 + virtualenv 15.0.2
+find recipy-venv/ -name "*recipy*"
+
+# Ubuntu 14.04.3 LTS + 3.4.3 + virtualenv 15.0.2 + virtualenvwrapper
+find Envs/ -name "*recipy*"
+
+# Ubuntu 14.04.3 LTS + 3.5.2 + Anaconda 4.1.1
+find anaconda3/ -name "*recipy*"
+
+# Ubuntu 14.04.3 LTS + 3.4.0 + pyenv 20160726
+find .pyenv -name "*recipy*"
+```
+
+Commands run to uninstall recipy 0.2.3:
+
+```
+# Windows 7 Enterprise SP1 + 3.5.2 (Anaconda 4.1.1)
+# Ubuntu 14.04.3 LTS + 3.4.3 + virtualenv 15.0.2
+# Ubuntu 14.04.3 LTS + 3.4.3 + virtualenv 15.0.2 + virtualenvwrapper
+# Ubuntu 14.04.3 LTS + 3.5.2 + Anaconda 4.1.1
+# Ubuntu 14.04.3 LTS + 3.4.0 + pyenv 20160726
+pip uninstall recipy
+
+# Ubuntu 14.04.3 LTS + 2.7.6
+sudo pip uninstall recipy
+
+# Ubuntu 14.04.3 LTS + 3.4.3
+sudo pip3 uninstall recipy
+```
+
+Commands run to uninstall recipy latest version:
+
+```
+# Windows 7 Enterprise SP1 + 3.5.2 (Anaconda 4.1.1)
+rm -rf Anaconda3/Lib/site-packages/recipy-0.2.3-py3.5.egg
+rm -f Anaconda3/Scripts/recipy-script.py
+rm -f Anaconda3/Scripts/recipy.exe
+
+# Ubuntu 14.04.3 LTS + 2.7.6
+sudo rm -rf /usr/local/lib/python2.7/dist-packages/recipy-0.2.3-py2.7.egg
+sudo rm -f /usr/local/bin/recipy
+
+# Ubuntu 14.04.3 LTS + 3.4.3
+sudo rm -rf /usr/local/lib/python3.4/dist-packages/recipy-0.2.3-py3.4.egg
+sudo rm -f /usr/local/bin/recipy
+
+# Ubuntu 14.04.3 LTS + 3.4.3 + virtualenv 15.0.2
+rm -rf recipy-venv/venv/lib/python3.4/site-packages/recipy-0.2.3-py3.4.egg
+rm -f recipy-venv/venv/bin/recipy
+
+# Ubuntu 14.04.3 LTS + 3.4.3 + virtualenv 15.0.2 + virtualenvwrapper
+rm -rf Envs/recipy-wrapper-env/lib/python3.4/site-packages/recipy-0.2.3-py3.4.egg
+rm -f Envs/recipy-wrapper-env/bin/recipy
+
+# Ubuntu 14.04.3 LTS + 3.5.2 + Anaconda 4.1.1
+rm -rf anaconda3/lib/python3.5/site-packages/recipy-0.2.3-py3.5.egg
+rm -f anaconda3/bin/recipy
+
+# Ubuntu 14.04.3 LTS + 3.4.0 + pyenv 20160726
+rm -f .pyenv/shims/recipy
+rm -rf .pyenv/versions/3.4.0/lib/python3.4/site-packages/recipy-0.2.3-py3.4.egg
+rm -f .pyenv/versions/3.4.0/bin/recipy
+
+pip freeze | grep recipy
+```
+
+Commands run to clean up environment:
+
+```
+unset EDITOR
+rm -rf ~/.recipy
+```

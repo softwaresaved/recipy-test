@@ -1,0 +1,16 @@
+FROM mikej888/recipy:dependencies
+RUN pip3 install recipy
+# Create group and user so image is not used as root.
+RUN groupadd -r ubuntu
+RUN useradd -r -g ubuntu -m -s /sbin/nologin -c "Image user" ubuntu
+RUN chown -R ubuntu:ubuntu /home/ubuntu
+# Run commands as ubuntu within /home/ubuntu.
+USER ubuntu
+WORKDIR /home/ubuntu
+# Set non-interactive matplotlib back-end. If this is not defined
+# then showing matplotlib plots gives an error:
+# _tkinter.TclError: no display name and no $DISPLAY environment variable
+RUN mkdir -p .config/matplotlib
+RUN echo "backend : Agg" >> .config/matplotlib/matplotlibrc
+# Default command to run as part "docker run" if no command is given.
+CMD ["/bin/bash"]

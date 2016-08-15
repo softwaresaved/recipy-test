@@ -98,7 +98,7 @@ apt-get install python3-setuptools
 apt-get install python3-pillow
 pip3 install scikit-learn
 apt-get install python3-skimage
-pip3 install python3-nibabel
+pip3 install nibabel
 apt-get install python3-gdal
 
 pip3 freeze
@@ -115,16 +115,6 @@ scikit-learn==0.17.1
 ```
 
 I used pip for scikit-learn and nibabel as there are no python3-sklearn or python3-nibabel packages.
-
-**virtualenv 15.0.2**
-
-[virtualenv](https://pypi.python.org/pypi/virtualenv) is a tool that creates isolated Python environments with all the executables and packages that that specific environment needs. [virtualenvwrapper](https://virtualenvwrapper.readthedocs.org/en/latest/) extends virtualenv with wrappers to make creating and managing virtual environments easier:
-
-```
-sudo su -
-pip install virtualenvwrapper
-pip3 install virtualenvwrapper
-```
 
 **virtualenv 15.0.2**
 
@@ -336,15 +326,152 @@ Tk/tkImaging.c:396:5: error: ISO C90 forbids mixed declarations and code [-Werro
 
 which has been [noted by others](https://github.com/python-pillow/Pillow/issues/2017). So I installed the same version as for Python 2 (3.2.0), which others noted works.
 
-#### Docker
+### Docker 1.12.0 on Ubuntu 14.04.4 LTS virtual machine
 
-**TODO** is there any point in doing this? It's just another VM in effect!
+Unlike a virtual machine, [Docker](https://www.docker.com/) does not include a separate operating system. Rather, it exploits Linux kernel resource isolation (CPU, memory, block I/O, network) and namespaces to allow independent "containers" to run within a single Linux instance. A Docker container is a basic version of Linux. A Docker image is software that is loaded into the container and then run.
+
+To install, see [Get Started with Docker Engine for Linux](https://docs.docker.com/linux/). The essentials are:
+
+```
+curl -fsSL https://get.docker.com/ | sh
+sudo usermod -aG docker ubuntu
+sudo service docker start
+```
+```
+docker start/running, process 29615
+```
+
+Log out and in again.
+
+```
+docker -v
+```
+```
+Docker version 1.12.0, build 8eab29e
+```
+
+Create a directory for a `Dockerfile`:
+
+```
+mkdir recipy-docker
+cd recipy-docker
+```
+
+Write a [Dockerfile](./Dockerfile) to install packages that recipy can log and other useful tools:
+
+```
+FROM ubuntu:trusty-20160217
+RUN apt-get update
+RUN apt-get install -y wget
+RUN apt-get install -y nano
+RUN apt-get install -y git
+RUN apt-get install -y python3-numpy
+RUN apt-get install -y python3-scipy
+RUN apt-get install -y python3-matplotlib
+RUN apt-get install -y python3-pandas python3-nose
+RUN apt-get install -y python3-nose
+RUN apt-get install -y python3-pip
+RUN apt-get install -y python3-setuptools
+RUN apt-get install -y python3-pillow
+RUN pip3 install scikit-learn
+RUN apt-get install -y python3-skimage
+RUN pip3 install nibabel
+RUN apt-get install -y python3-gdal
+RUN pip3 freeze
+# Default command to run as part "docker run" if no command is given.
+CMD ["/bin/bash"]
+```
+
+Build image, remembering to put in the `.`:
+
+```
+docker build -t mikej888/recipy:dependencies .
+```
+
+(note the tag of the image is consistent with that expected by Docker Hub `username / repository : version label or tag`)
+
+Check image is now available:
+
+```
+docker images
+```
+```
+REPOSITORY          TAG                 IMAGE ID            CREATED              SIZE
+mikej888/recipy     dependencies        b310a01f57a9        7 seconds ago       722.1 MB
+ubuntu              trusty-20160217     14b59d36bae0        5 months ago        188 MB
+```
+
+Create a directory to be shared with the running image:
+
+```
+mkdir $HOME/docker-shared
+chmod o+w $HOME/docker-shared
+```
+
+If `docker-shared` is not created beforehand, then it will be created by Docker and will have `root` owner and group in both the running container and on the host.
+
+If `docker-shared` is created beforehand, then it will have `1000` owner and group in the running container and a user within a running container cannot access it. Hence, setting the `other` file permission is required.
+
+Run the image in a container, mounting `docker-shared` to `/tmp/shared`:
+
+```
+docker run -it -v $HOME/docker-shared:/tmp/shared --rm mikej888/recipy:dependencies
+```
+
+The other flags are as follows:
+
+* `-i` keeps `STDIN` open even if the host is not attached to the container when running.
+* `-t` allocates a pseudo-terminal to the container.
+* `--rm` automatically removes the container when it exits. This does not remove the image.
+
+In another terminal window, view the available containers. There will be one with our image:
+
+```
+docker ps
+```
+```
+CONTAINER ID        IMAGE                 COMMAND             CREATED             STATUS              PORTS               NAMES
+a510f396a25c        mikej888/recipy:dependencies   "/bin/bash"         26 seconds ago      Up 25 seconds                           desperate_davinci
+```
+
+Check image:
+
+```
+lsb_release -a
+```
+```
+No LSB modules are available.
+Distributor ID:	Ubuntu
+Description:	Ubuntu 14.04.4 LTS
+Release:	14.04
+Codename:	trusty
+```
+
+```
+python3
+import matplotlib
+# Set non-interactive matplotlib back-end.
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+plt.plot([1,2,3])
+plt.savefig("/tmp/shared/plot.png")
+```
+
+Check `docker-shared/plot.png` exists on the host and holds a graph.
+
+Exit Python and container:
+
+```
+CTRL-D
+CTRL-D
+```
 
 ---
 
 ## Summary of deployment environments
 
-This summarises the environments into which recipy was deployed, which are described in the following sections. The default package location for each Python version was used, except for the virtualenv and virtualenvwrapper environments where recipy was installed into a virtual environment in the user's local directory.
+This summarises the environments into which recipy was deployed, which are desc
+ribed in the following sections. The default package location for each Python version was used, except for the virtualenv environment where recipy was installed into a virtual environment in the user's local directory.
 
 | Operating System         | Python                          | Deployed |
 | ------------------------ | ------------------------------- | -------- |
@@ -358,6 +485,9 @@ This summarises the environments into which recipy was deployed, which are descr
 |                          | 3.4.3 + virtualenv 15.0.2       | Yes      |
 |                          | 2.7.6 + virtualenvwrapper 4.7.1 |          |
 |                          | 3.4.3 + virtualenvwrapper 4.7.1 | Yes      |
+| Ubuntu 14.04.4 LTS       |                                 |          |
+| Docker 1.12.0            |                                 |          |
+|                          | 3.4.3                           | Yes      |
 | Ubuntu 14.04.3 LTS       |                                 |          |
 | (local Python users)     |                                 |          |
 |                          | 3.5.2 (Anaconda 4.1.1)          | Yes      |
@@ -377,7 +507,7 @@ Possible environments for future deployments include:
 
 ## Deploy recipy and run simple script
 
-The following scripts were used to check that a recipy deployment was operating correctly with numpy.
+The following [scripts](./scripts) were used to check that a recipy deployment was operating correctly with numpy.
 
 `check-recipy.py`:
 
@@ -398,7 +528,7 @@ data = np.array([list(range(4,8)), list(range(12,16))])
 np.savetxt("file-import.csv", data, delimiter=",")
 ```
 
-The following script was used to check recipy's wrapper's for Python's `open` command:
+The following script was used to check recipy's wrappers for Python's `open` command:
 
 `check-recipy-open.py`:
 
@@ -856,7 +986,7 @@ recipy --version
 recipy v0.2.3
 ```
 
-**Suggestion** The recipy 0.2.3 package was [tagged](https://github.com/recipy/recipy/releases/tag/v0.2.3) on 17/11/2015. There have been many commits since then, so the current state of the repository, on GitHub, is no longer version 0.2.3 but, at least, 0.2.4. I'd recommend upping the version number in setup.py immediately after you tag a release, or at the first time you make a commit after tagging the release.
+**Suggestion** The recipy 0.2.3 package was [tagged](https://github.com/recipy/recipy/releases/tag/v0.2.3) on 17/11/2015. There have been many commits since then, so the current state of the repository, on GitHub, is no longer version 0.2.3 but, at least, 0.2.4. I'd recommend upping the version number in `setup.py` immediately after you tag a release, or at the first time you make a commit after tagging the release.
 
 ```
 recipy search file-import.csv
@@ -1450,18 +1580,6 @@ python --version
 Python 3.4.3
 ```
 
-Only the following commands were run:
-
-```
-pip install recipy
-recipy --version
-python check-recipy-import.py
-python -m check-recipy.py
-python check-recipy-open.py
-recipy latest
-recipy gui
-```
-
 **recipy package 2.3.0**
 
 ```
@@ -1518,6 +1636,166 @@ find Envs/ -name "*recipy*"
 ```
 Envs/recipy-wrapper-env
 ```
+
+### Ubuntu 14.04.3 LTS + Docker 1.12.0 + 3.4.3
+
+**recipy package 2.3.0**
+
+Create [Dockerfile-recipy-2.3.0](./scripts/Dockerfile-recipy-2.3.0), which uses the Docker image mikej888/recipy:dependencies as a base image upon which to install recipy:
+
+```
+FROM mikej888/recipy:dependencies
+RUN pip3 install recipy
+# Create group and user so image is not used as root.
+RUN groupadd -r ubuntu
+RUN useradd -r -g ubuntu -m -s /sbin/nologin -c "Image user" ubuntu
+RUN chown -R ubuntu:ubuntu /home/ubuntu
+# Run commands as ubuntu within /home/ubuntu.
+USER ubuntu
+WORKDIR /home/ubuntu
+# Set non-interactive matplotlib back-end. If this is not defined
+# then showing matplotlib plots gives an error:
+# _tkinter.TclError: no display name and no $DISPLAY environment variable
+RUN mkdir -p .config/matplotlib
+RUN echo "backend : Agg" >> .config/matplotlib/matplotlibrc
+# Default command to run as part "docker run" if no command is given.
+CMD ["/bin/bash"]
+```
+
+```
+docker build -t mikej888/recipy:2.3.0 -f Dockerfile-recipy-2.3.0 .
+```
+```
+docker images
+```
+```
+mikej888/recipy     2.3.0               2b698d8b1cdd        12 seconds ago      732.2 MB
+mikej888/recipy     dependencies        d5df9c83e961        5 minutes ago       721.7 MB
+ubuntu              trusty-20160217     14b59d36bae0        5 months ago        188 MB
+```
+```
+docker run -it -v $HOME/docker-shared:/home/ubuntu/shared -p 9000:9000 --rm mikej888/recipy:2.3.0 
+```
+
+I could not access the port exposed by `recipy gui`, 9000, from within the host, either via `wget` or via a web browser. I ran a simple Flask application code from [Dockerize Simple Flask App](http://containertutorials.com/docker-compose/flask-simple-app.html) as a stand-alone Python program called `service.py` in a running container:
+
+```
+docker run -it -v $HOME/docker-shared:/home/ubuntu/shared -p 9000:9000 -p 5000:5000 --rm mikej888/recipy:github
+python3 shared/service.py 
+```
+```
+ * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger pin code: 173-554-812
+```
+
+Then, in my host, I ran:
+
+```
+wget 127.0.0.1:5000
+```
+
+The container showed:
+
+```
+172.17.0.1 - - [15/Aug/2016 12:42:27] "GET / HTTP/1.1" 200 -
+```
+
+And the response was returned to the host:
+
+```
+--2016-08-15 05:43:32--  http://127.0.0.1:5000/
+Connecting to 127.0.0.1:5000... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 16 [text/html]
+Saving to: "index.html"
+
+100%[======================================>] 16          --.-K/s   in 0s      
+
+2016-08-15 05:43:32 (799 KB/s) - "index.html" saved [16/16]
+```
+```
+cat index.html 
+```
+```
+Flask Dockerized
+```
+
+Similarly if the URL http://127.0.0.1:5000 was pinged from the host.
+
+**Issue** Investigate how to access a `recipy gui` service running within a Docker container, from within the container's host. Maybe this has to do with how the Flask framework, which is used to implement `recipy gui` is configured.
+
+**recipy latest version**
+
+Create [Dockerfile-recipy-github](./scripts/Dockerfile-recipy-github), which uses the Docker image mikej888/recipy:dependencies as a base image upon which to install recipy:
+
+```
+FROM mikej888/recipy:dependencies
+RUN git clone https://github.com/recipy/recipy
+RUN cd recipy && git log -1 --format="%ai %H"
+# Attempt the installation twice as the first attempt fails with:
+# error: Could not find required distribution Flask
+# but the second attempt succeeds. The "ls" ensures that the
+# first command returns 0 so the rest of the Dockerfile is
+# executed.
+RUN cd recipy && python3 setup.py install; ls
+RUN cd recipy && python3 setup.py install
+RUN python3 setup.py install
+# Create group and user so image is not used as root.
+RUN groupadd -r ubuntu
+RUN useradd -r -g ubuntu -m -s /sbin/nologin -c "Image user" ubuntu
+RUN chown -R ubuntu:ubuntu /home/ubuntu
+# Run commands as ubuntu within /home/ubuntu.
+USER ubuntu
+WORKDIR /home/ubuntu
+# Set non-interactive matplotlib back-end. If this is not defined
+# then showing matplotlib plots gives an error:
+# _tkinter.TclError: no display name and no $DISPLAY environment variable
+RUN mkdir -p .config/matplotlib
+RUN echo "backend : Agg" >> .config/matplotlib/matplotlibrc
+# Default command to run as part "docker run" if no command is given.
+CMD ["/bin/bash"]
+```
+
+**Issue** When the command `python3 setup.py install` is run when creating the Docker container, an error arises:
+
+```
+Flask-WTF 0.12 is already the active version in easy-install.pth
+
+Installed /usr/local/lib/python3.4/dist-packages/Flask_WTF-0.12-py3.4.egg
+error: Could not find required distribution Flask
+```
+
+If the command is re-run, as in the above Dockerfile, then installation succeeds:
+
+```
+Flask-Script 2.0.5 is already the active version in easy-install.pth
+
+Using /usr/local/lib/python3.4/dist-packages/Flask_Script-2.0.5-py3.4.egg
+Finished processing dependencies for recipy==0.2.3
+```
+
+This was also found to be the case if interactively running `python3 setup.py install` within a container created from mikej888/recipy:dependencies. Find out why this arises, so there is no need for the awful hack in the Dockerfile!
+
+```
+docker build -t mikej888/recipy:github -f Dockerfile-recipy-github .
+```
+```
+docker images
+```
+```
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+mikej888/recipy     github              36d986606940        47 seconds ago      732.8 MB
+mikej888/recipy     2.3.0               89813f981e36        26 minutes ago      732.2 MB
+mikej888/recipy     dependencies        d5df9c83e961        43 minutes ago      721.7 MB
+ubuntu              trusty-20160217     14b59d36bae0        5 months ago        188 MB
+```
+```
+docker run -it -v $HOME/docker-shared:/home/ubuntu/shared -p 9000:9000 --rm mikej888/recipy:github
+```
+
+As for recipy 2.3.0 I couldn't access a `recipy gui` service running within the Docker container, from within the container's host.
 
 ### Ubuntu 14.04.3 LTS + 3.5.2 + Anaconda 4.1.1
 
@@ -1789,8 +2067,6 @@ README.md comments that
 
 ## Other examples
 
-**TODO** check if this information is auto-generated. If so then suggest it auto-generate a .md file for the repository (yes, an auto-generated artefact in the repository!)
-
 From `recipy gui` at http://127.0.0.1:9000/patched_modules, the packages, input and output functions logged by the current version are:
 
 pandas:
@@ -1831,10 +2107,11 @@ nibabel:
 * nifti1.Nifti1Image.from_filename, nifti2.Nifti2Image.from_filename, freesurfer.mghformat.MGHImage.from_filename, spm99analyze.Spm99AnalyzeImage.from_filename, minc1.Minc1Image.from_filename, minc2.Minc2Image.from_filename, analyze.AnalyzeImage.from_filename, parrec.PARRECImage.from_filename, spm2analyze.Spm2AnalyzeImage.from_filename
 * nifti1.Nifti1Image.to_filename, nifti2.Nifti2Image.to_filename, freesurfer.mghformat.MGHImage.to_filename, spm99analyze.Spm99AnalyzeImage.to_filename, minc1.Minc1Image.to_filename, minc2.Minc2Image.to_filename, analyze.AnalyzeImage.to_filename, parrec.PARRECImage.to_filename, spm2analyze.Spm2AnalyzeImage.to_filename
 
+**Suggestion** `recipy gui` at http://127.0.0.1:9000/patched_modules shows the packages, input and output functions logged by the current version. These are queried by `recipyGui/views.py` from the recipy database, from within its `patches` table. This table is populated when the `recipy` package is first used (via `__init.py__` and `PatchWarnings.py`, `PatchBaseScientific.py`, `PatchScientific.py`). Write a script that runs comparable commands to create a MarkDown page of the patched packages that can then form part of the user documentation. Users would be able to see a list of the patched packages and functions, without having to install recipy and run `recipy gui`.
+
 **TODO** Ask where Pillow and scikit-image are. Add Suggestion that this be clarified on README.md.
 
 **TODO** Ask what bs4 and lxml.etree are. Add Suggestion that this be added to README.md.
-
 
 **TODO** Write and run one sample script for more package/function recipy can log (look at the recipy source code) These can form basis of test scripts.
 
@@ -1847,8 +2124,6 @@ nibabel:
 ## General
 
 **Suggestion** Provide guidelines on how to use recipy in a research workflow e.g. how to use recipy and Git to record provenance and recommended ways of archiving input/output files etc.
-
-**TODO** Restructure foregoing into command-list, deviations for each platform, and issues (with list of versions to which each issue applied)
 
 ---
 
@@ -1872,6 +2147,7 @@ Commands run to install recipy 0.2.3:
 # Windows 7 Enterprise SP1 + 3.5.2 (Anaconda 4.1.1)
 # Ubuntu 14.04.3 LTS + 3.4.3 + virtualenv 15.0.2
 # Ubuntu 14.04.3 LTS + 3.4.3 + virtualenv 15.0.2 + virtualenvwrapper
+# Docker 1.12.0 + Ubuntu 14.04.4 LTS + 3.4.3 (via Dockerfile)
 # Ubuntu 14.04.3 LTS + 3.5.2 + Anaconda 4.1.1
 # Ubuntu 14.04.3 LTS + 3.4.0 + pyenv 20160726
 pip install recipy
@@ -1897,6 +2173,7 @@ git log -1 --format="%ai %H"
 # Windows 7 Enterprise SP1 + 3.5.2 (Anaconda 4.1.1)
 # Ubuntu 14.04.3 LTS + 3.4.3 + virtualenv 15.0.2
 # Ubuntu 14.04.3 LTS + 3.4.3 + virtualenv 15.0.2 + virtualenvwrapper
+# Docker 1.12.0 + Ubuntu 14.04.4 LTS + 3.4.3 (via Dockerfile)
 # Ubuntu 14.04.3 LTS + 3.5.2 + Anaconda 4.1.1
 # Ubuntu 14.04.3 LTS + 3.4.0 + pyenv 20160726
 python setup.py install
@@ -1928,7 +2205,7 @@ recipy search -f "il..c"
 
 recipy annotate
 EDITOR=notepad.exe # Windows only
-EDITOR=notepad.exe # Ubuntu only
+EDITOR=nano # Ubuntu only
 recipy annotate
 export EDITOR=notepad.exe # Windows only
 export EDITOR=nano # Ubuntu only

@@ -53,7 +53,7 @@ The default Python package location for each Python version was used, except for
 
 The following Python environments were used:
 
-* [Anaconda](https://www.continuum.io), a scientific Python distribution which provides Python, the SciPy stack and other scientific Python packages, including (from [Anaconda package list](https://docs.continuum.io/anaconda/pkg-docs)): numpy, pandas, matplotlib, scikit-learn, scikit-image, pillow. Anaconda can be deployed within a user's own directory.
+* [Anaconda](https://www.continuum.io), a scientific Python distribution which provides Python, the SciPy stack and other scientific Python packages, including (from [Anaconda package list](https://docs.continuum.io/anaconda/pkg-docs)): numpy, pandas, matplotlib, scikit-learn, scikit-image, pillow, beautifulsoup and lxml. Anaconda can be deployed within a user's own directory.
 * Default Python 2.7.6 and 3.4.3 versions provided in Ubuntu 14.04.3 LTS and Ubuntu 14.04.4 LTS.
 * [virtualenv](https://pypi.python.org/pypi/virtualenv), a tool that creates isolated Python environments with all the executables and packages that that specific environment needs. It allows users to use centrally-installed packages, but also to install additional packages without the need for administrator access.
 * [virtualenvwrapper](https://virtualenvwrapper.readthedocs.org/en/latest/), a wrapper for virtualenv  to make creating and managing virtual environments easier.
@@ -61,14 +61,16 @@ The following Python environments were used:
 
 Currently all of the input/output functions for the following Python packages are wrapped by recipy:
 
+* [Beautiful Soup](https://www.crummy.com/software/BeautifulSoup/).
+* [Geospatial Data Abstraction Library](https://pypi.python.org/pypi/GDAL/). Note that Windows requires installing GDAL Windows binaries, modifying system paths and creating environment variables.
+* [lxml](http://lxml.de/). See [Installing lxml](http://lxml.de/installation.html).
+* [matplotlib](http://matplotlib.org/). This can be installed as part of SciPy.
+* [NiBabel](http://nipy.org/nibabel/) (only the data formats in submodules imported by default). See [Installation](http://nipy.org/nibabel/installation.html).
 * [numpy](http://www.numpy.org/). This can be installed as part of [SciPy](https://www.scipy.org/) ([Installing the SciPy Stack](https://www.scipy.org/install.html))
 * [pandas](http://pandas.pydata.org/). This can be installed as part of SciPy.
-* [matplotlib](http://matplotlib.org/). This can be installed as part of SciPy.
 * [Pillow](https://python-pillow.org/). See [Installation](https://pillow.readthedocs.io/en/latest/installation.html).
-* [scikit-learn](http://scikit-learn.org/stable/). See [Installing scikit-learn](http://scikit-learn.org/stable/install.html). They comment that "We don't recommend installing scipy or numpy using pip on linux".
 * [scikit-image](http://scikit-image.org). See [Installing scikit-image](http://scikit-image.org/docs/dev/install.html).
-* [NiBabel](http://nipy.org/nibabel/) (only the data formats in submodules imported by default). See [Installation](http://nipy.org/nibabel/installation.html).
-* [Geospatial Data Abstraction Library](https://pypi.python.org/pypi/GDAL/). Note that Windows requires installing GDAL Windows binaries, modifying system paths and creating environment variables.
+* [scikit-learn](http://scikit-learn.org/stable/). See [Installing scikit-learn](http://scikit-learn.org/stable/install.html). They comment that "We don't recommend installing scipy or numpy using pip on linux".
 
 For information on how virtual machines were set up and these packages installed, see Appendix - setting up deployment environments.
 
@@ -132,6 +134,15 @@ Suggestions arising from the deployment and use of recipy are as follows.
 ### Functionality
 
 During `recipy annotate`, configure the editor to show the current notes so these can be edited without the need for the user to copy them from the bottom of the file.
+
+If `~/.recipy/recipyrc` is created of form:
+
+```
+[data]
+file_diff_outputs
+```
+
+then file diffs between runs are visible within `recipy gui`. But, they are not visible via the command line. Provide some way for these to be returned.
 
 `recipy gui` page http://127.0.0.1:9000/patched_modules shows the packages, input and output functions logged by recipy. These are queried by `recipyGui/views.py` from the recipy database, from within its `patches` table. This table is populated when the `recipy` package is first used (via `__init.py__` and `PatchWarnings.py`, `PatchBaseScientific.py`, `PatchScientific.py`). Write a script that runs comparable commands to create a MarkDown page of the packages and functions that can then form part of the user documentation. Users would be able to see a list of the packages and functions, without having to install recipy and run `recipy gui`.
 
@@ -198,9 +209,16 @@ State that, if default/system-wide Python 2 and 3 distributions co-exist on Linu
 
 Describe whether `recipy.open` has the same function signature as `open` (with the additional `encoding` parameter) or whether it changes it, in which case describe the altered signature.
 
-### Process
+State whether `git` is needed on Windows or Linux to use recipy. It is clear that it is needed for its Git-related functionality, and the `hash_inputs`, `hash_outputs` and `diff` configuration options, but not for other functionality.
 
-The recipy 0.2.3 package was [tagged](https://github.com/recipy/recipy/releases/tag/v0.2.3) on 17/11/2015. There have been many commits since then, so the current state of the repository, on GitHub, is no longer version 0.2.3 but, at least, 0.2.4. I'd recommend upping the version number in `setup.py` immediately after you tag a release, or at the first time you make a commit after tagging the release.
+If `~/.recipy/recipyrc` is created of form:
+
+```
+[data]
+file_diff_outputs
+```
+
+then file diffs between runs are visible within `recipy gui`. It is not clear how to view these at the command-line.
 
 Provide guidelines on how to use recipy in a research workflow e.g. how to use recipy and Git to record provenance and recommended ways of archiving input/output files etc.
 
@@ -210,9 +228,9 @@ Provide guidelines on how to use recipy in a research workflow e.g. how to use r
 
 Issues arising from the deployment and use of recipy are as follows.
 
-## recipy 0.2.3 and dd2b7ae96b99ca6d3678f8236ca97ec5ad672454
+### recipy 0.2.3 and dd2b7ae96b99ca6d3678f8236ca97ec5ad672454
 
-Allow use of full IDs when searching. It feels counter-intuitive that a partial match succeeds:
+Allow use of full IDs when searching and also provide a `recipy get ID` command. It feels counter-intuitive that a partial match succeeds:
 
 ```
 $ recipy search -i 23bf2fd2-b67a-46c1-9fd8-960e71d32f2
@@ -242,6 +260,24 @@ $ recipy annotate
 
 Resolve this issue or, if it cannot be resolved, recommend that Windows/Git Bash/Anaconda users use `recipy gui`.
 
+`recipy latest` raises `IndexError: list index out of range` if there are no runs:
+
+```
+$ recipy latest
+Traceback (most recent call last):
+  File "/home/ubuntu/anaconda3/bin/recipy", line 9, in <module>
+    load_entry_point('recipy==0.2.3', 'console_scripts', 'recipy')()
+  File "/home/ubuntu/anaconda3/lib/python3.5/site-packages/recipy-0.2.3-py3.5.egg/recipyCmd/recipycmd.py", line 118, in main
+    latest(args)
+  File "/home/ubuntu/anaconda3/lib/python3.5/site-packages/recipy-0.2.3-py3.5.egg/recipyCmd/recipycmd.py", line 225, in latest
+    run = get_latest_run()
+  File "/home/ubuntu/anaconda3/lib/python3.5/site-packages/recipy-0.2.3-py3.5.egg/recipyCmd/recipycmd.py", line 220, in get_latest_run
+    return results[-1]
+IndexError: list index out of range
+```
+
+Catch this error and print a suitable error message e.g. `You have not recorded any runs`.
+
 ### recipy 2.3.0
 
 Searches of the `recipy gui` web pages did not work. I tried using `mjj`, `file-import.csv`, `C:\Users\mjj\deployment\file` for Windows and `/home/ubuntu/deployment/file` for Ubuntu and, for each, got a `HTTP 500 Interal Server Error`.
@@ -268,7 +304,18 @@ Outputs: none
 
 It looks like this feature and information was added to recipy and `README.md` since the 0.2.3 package was created. Add a link to the recipy [pypi](https://pypi.python.org/pypi/recipy) page to point to the `README.md` corresponding to the version in the [v0.2.3](https://github.com/recipy/recipy/releases/tag/v0.2.3) tag. Likewise, adopt this practice for future releases, or make it clear in the documentation what features are supported by what versions.
 
-## recipy dd2b7ae96b99ca6d3678f8236ca97ec5ad672454
+### recipy dd2b7ae96b99ca6d3678f8236ca97ec5ad672454
+
+The recipy 0.2.3 package was [tagged](https://github.com/recipy/recipy/releases/tag/v0.2.3) on 17/11/2015. There have been many commits since then, so the current state of the repository, on GitHub, is no longer version 0.2.3 but, at least, 0.2.4. I'd recommend upping the version number in `setup.py` immediately after you tag a release, or at the first time you make a commit after tagging the release.
+
+There is inconsistency between `README.md` and `recipy gui` in terms of logged packages:
+
+* `recipy gui` statues that `lxml.etree` and `bs4` packages are logged (which is the case as `recipy gui` gets this information from the recipy database which is, in turn, populated by the recipy components that do this logging.
+* `README.md` states that `scikit-image` and `pillow` are logged. However, this code is commented out in `recipy/PatchScientific.py` (in both the current version and in version 0.2.3)
+
+Adopting the earlier suggestion of auto-generating user documentation would reduce the risk of such inconsistency.
+
+If the `scikit-image` and `pillow` in `recipy/PatchScientific.py` was accidently commented out then restore it. If it needs to be fixed then add a comment stating such and create an associated GitHub issue. Otherwise, just remove it from the file.
 
 Under Windows `recipy search file-import.csv` raises `sre_constants.error: incomplete escape \U at position 2` using Git Bash and Anaconda Python prompts:
 
@@ -589,62 +636,49 @@ Document the workaround `pyenv rehash && hash -r` in the short-term and track do
 
 ---
 
-## Documentation
-
-**TODO** Look at README.md sections:
-
-* Configuration
-* How it works
-
-**TODO** Compare these below, to README.md, to actual code and document issue of inconsistency (in Suggestions above).
-
----
-
 ## Other examples
 
-From `recipy gui` at http://127.0.0.1:9000/patched_modules, the packages, input and output functions logged by the current version are:
+The packages, input and output functions currently logged are:
 
-pandas:
+pandas
 
 * read_csv, read_table, read_excel, read_hdf, read_pickle, read_stata, read_msgpack
 * DataFrame.to_csv, DataFrame.to_excel, DataFrame.to_hdf, DataFrame.to_msgpack, DataFrame.to_stata, DataFrame.to_pickle, Panel.to_excel, Panel.to_hdf, Panel.to_msgpack, Panel.to_pickle, Series.to_csv, Series.to_hdf, Series.to_msgpack, Series.to_pickle
 
-matplotlib.pyplot:
+matplotlib.pyplot
 
 * None
 * savefig
 
-numpy:
+numpy
 
 * genfromtxt, loadtxt, fromfile
 * save, savez, savez_compressed, savetxt
 
-<td>lxml.etree</td>
-parse, iterparse
-None
+lxml.etree
 
-<td>bs4</td>
-BeautifulSoup
-None
+* parse, iterparse
+* None
 
-gdal:
+bs4
+
+* BeautifulSoup
+* None
+
+gdal
 
 * Open
 * Driver.Create, Driver.CreateCopy
 
-sklearn:
+sklearn
 
 * datasets.load_svmlight_file
 * datasets.dump_svmlight_file
 
-nibabel:
+nibabel
 
 * nifti1.Nifti1Image.from_filename, nifti2.Nifti2Image.from_filename, freesurfer.mghformat.MGHImage.from_filename, spm99analyze.Spm99AnalyzeImage.from_filename, minc1.Minc1Image.from_filename, minc2.Minc2Image.from_filename, analyze.AnalyzeImage.from_filename, parrec.PARRECImage.from_filename, spm2analyze.Spm2AnalyzeImage.from_filename
 * nifti1.Nifti1Image.to_filename, nifti2.Nifti2Image.to_filename, freesurfer.mghformat.MGHImage.to_filename, spm99analyze.Spm99AnalyzeImage.to_filename, minc1.Minc1Image.to_filename, minc2.Minc2Image.to_filename, analyze.AnalyzeImage.to_filename, parrec.PARRECImage.to_filename, spm2analyze.Spm2AnalyzeImage.to_filename
-
-**TODO** Ask where Pillow and scikit-image are. Add Suggestion that this be clarified on README.md.
-
-**TODO** Ask what bs4 and lxml.etree are. Add Suggestion that this be added to README.md.
 
 **TODO** Write and run one sample script for more package/function recipy can log (look at the recipy source code) These can form basis of test scripts.
 
@@ -665,9 +699,24 @@ Install packages logged by recipy:
 pip install nibabel
 ```
 
-I didn't install GDAL due to the additional Windows-specific install process. 
+Check package versions:
 
-**TODO** revisit GDAL for completeness.
+```
+pip freeze
+```
+```
+beautifulsoup4==4.4.1
+lxml==3.6.0
+matplotlib==1.5.1
+nibabel==2.0.2
+numpy==1.11.1
+pandas==0.18.1
+Pillow==3.2.0
+scikit-image==0.12.3
+scikit-learn==0.17.1
+```
+
+I didn't install GDAL due to the additional Windows-specific install process. 
 
 ### Ubuntu 14.04.3 LTS virtual machine (default Python users)
 
@@ -692,6 +741,8 @@ apt-get install -y python-nibabel
 apt-get install -y python-gdal
 ```
 
+lxml and bs4 are installed as side-effects of the above.
+
 Check package versions:
 
 ```
@@ -699,7 +750,9 @@ pip freeze
 ```
 ```
 GDAL==1.10.1
-Pillow==2.3.0
+Pillow==2.3.0b
+beautifulsoup4==4.2.1
+lxml==3.3.3
 matplotlib==1.3.1
 nibabel==1.2.2
 numpy==1.8.2
@@ -727,6 +780,8 @@ pip3 install nibabel
 apt-get install -y python3-gdal
 ```
 
+lxml and bs4 are installed as side-effects of the above.
+
 Check package versions:
 
 ```
@@ -735,6 +790,8 @@ pip3 freeze
 ```
 GDAL==1.10.1
 Pillow==2.3.0
+beautifulsoup4==4.2.1
+lxml==3.3.3
 matplotlib==1.3.1
 nibabel==2.0.2
 numpy==1.8.2
@@ -801,6 +858,8 @@ pip freeze
 ```
 ```
 GDAL==1.10.0
+beautifulsoup4==4.4.1
+lxml==3.6.0
 matplotlib==1.5.1
 nibabel==2.0.2
 numpy==1.11.1
@@ -844,6 +903,8 @@ pip freeze
 ```
 ```
 GDAL==1.10.0
+beautifulsoup4==4.4.1
+lxml==3.6.0
 matplotlib==1.5.1
 nibabel==2.0.2
 numpy==1.11.1
@@ -901,6 +962,9 @@ pip install pillow
 pip install scikit-learn
 pip install scikit-image
 pip install nibabel
+sudo apt-get install -y libxslt1-dev
+pip install lxml
+pip install beautifulsoup4
 export CPLUS_INCLUDE_PATH=/usr/include/gdal
 export C_INCLUDE_PATH=/usr/include/gdal
 easy_install "GDAL==1.10.0"
@@ -913,6 +977,8 @@ pip freeze
 ```
 ```
 GDAL==1.10.0
+beautifulsoup4==4.5.1
+
 matplotlib==1.5.1
 nibabel==2.0.2
 numpy==1.11.1
@@ -939,6 +1005,8 @@ pip install pillow=="3.2.10"
 pip install scikit-learn
 pip install scikit-image
 pip install nibabel
+pip install lxml
+pip install beautifulsoup4
 export CPLUS_INCLUDE_PATH=/usr/include/gdal
 export C_INCLUDE_PATH=/usr/include/gdal
 easy_install "GDAL==1.10.0"
@@ -952,6 +1020,8 @@ pip freeze
 ```
 GDAL==1.10.0
 Pillow==3.2.0
+beautifulsoup4==4.5.1
+lxml==3.6.1
 matplotlib==1.5.1
 nibabel==2.0.2
 numpy==1.11.1
@@ -1013,6 +1083,8 @@ RUN pip3 freeze
 # Default command to run as part "docker run" if no command is given.
 CMD ["/bin/bash"]
 ```
+
+lxml and bs4 are installed as side-effects of the above.
 
 Build image, remembering to put in the `.`:
 
@@ -1102,6 +1174,8 @@ pip3 freeze
 ```
 GDAL==1.10.1
 Pillow==2.3.0
+beautifulsoup4==4.2.1
+lxml==3.3.3
 matplotlib==1.3.1
 nibabel==2.0.2
 numpy==1.8.2

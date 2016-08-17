@@ -1,7 +1,7 @@
 """
 Usage:
 
-    python -m recipy run_bs4.py BeautifulSoup data/index.html
+    python run_bs4.py BeautifulSoup data/index.html
 """
 from __future__ import print_function
 from bs4 import BeautifulSoup

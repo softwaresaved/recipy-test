@@ -1,7 +1,7 @@
 """
 Usage:
 
-    python -m recipy run_matplotlib.pyplot.py savefig plot.png
+    python run_matplotlib.pyplot.py savefig plot.png
 """
 from __future__ import print_function
 import matplotlib

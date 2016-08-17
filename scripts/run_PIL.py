@@ -1,8 +1,8 @@
 """
 Usage:
 
-    python -m recipy run_PIL.py Image.open data/image.png
-    python -m recipy run_PIL.py Image.save data/image.png plot.png
+    python -m run_PIL.py Image.open data/image.png
+    python -m run_PIL.py Image.save data/image.png plot.png
 """
 from __future__ import print_function
 from PIL import Image

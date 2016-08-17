@@ -1,8 +1,8 @@
 """
 Usage: 
 
-    python -m recipy run_lxml.etree.py parse data/data.xml
-    python -m recipy run_lxml.etree.py iterparse data/data.xml
+    python run_lxml.etree.py parse data/data.xml
+    python run_lxml.etree.py iterparse data/data.xml
 """
 from __future__ import print_function
 from lxml import etree

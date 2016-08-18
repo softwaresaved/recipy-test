@@ -84,3 +84,8 @@ python $MODULE run_nibabel.py parrec.PARRECImage.from_filename data/nibabel/parr
 python $MODULE run_nibabel.py parrec.PARRECImage.to_filename data/nibabel/parrec_image.PAR tmp/nibabel/parrec_image
 python $MODULE run_nibabel.py spm2analyze.Spm2AnalyzeImage.from_filename data/nibabel/spm2_image
 python $MODULE run_nibabel.py spm2analyze.Spm2AnalyzeImage.to_filename tmp/nibabel/spm2_image
+
+mkdir tmp/gdal
+python $MODULE run_gdal.py Open data/gdal/image.tiff
+python $MODULE run_gdal.py Driver.Create tmp/gdal/image.tiff
+python $MODULE run_gdal.py Driver.CreateCopy data/gdal/image.tiff tmp/gdal/imagecopy.tiff

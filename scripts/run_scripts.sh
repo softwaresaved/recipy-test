@@ -18,3 +18,6 @@ python $MODULE run_numpy.py save data.npy
 python $MODULE run_numpy.py savez data.npz
 python $MODULE run_numpy.py savez_compressed dataz.npz
 python $MODULE run_numpy.py savetxt data.txt
+
+python $MODULE run_sklearn.py dump_svmlight_file data.svmlight
+python $MODULE run_sklearn.py load_svmlight_file data/data.svmlight

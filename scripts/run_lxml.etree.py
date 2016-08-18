@@ -11,16 +11,18 @@ import sys
 
 def invoke_parse(arguments):
     file_name = arguments[0]
-    print("Parsing: ", file_name)
+    print("Parsing:", file_name)
     with open(file_name, "r") as f:
         tree = etree.parse(f)
-        print("Tree: ", etree.tostring(tree))
-        print("Tag: ", tree.getroot().tag)
+        print("Tree:")
+        print(etree.tostring(tree))
+        print("Tag:")
+        print(tree.getroot().tag)
 
 
 def invoke_iterparse(arguments):
     file_name = arguments[0]
-    print("Iteratively parsing: ", file_name)
+    print("Iteratively parsing:", file_name)
     with open(file_name, "r") as f:
         for event, element in etree.iterparse(file_name,
                                               events=("start", "end")):

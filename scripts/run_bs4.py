@@ -10,7 +10,7 @@ import sys
 
 def invoke_BeautifulSoup(arguments):
     file_name = arguments[0]
-    print("Parsing: ", file_name)
+    print("Parsing:", file_name)
     with open(file_name, "r") as f:
         soup = BeautifulSoup(f, "lxml")
         print("Pretty-printed data:")

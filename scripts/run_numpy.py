@@ -16,29 +16,34 @@ import sys
 
 def invoke_loadtxt(arguments):
     file_name = arguments[0]
+    print("Loading data:", file_name)
     data = np.loadtxt(file_name, delimiter=",")
-    print("Data: ", data.shape)
+    print("Data:", data.shape)
     print(data)
 
 
 def invoke_fromfile(arguments):
     file_name = arguments[0]
+    print("Loading data:", file_name)
     data = np.fromfile(file_name, sep=",")
-    print("Data: ", data.shape)
+    print("Data:", data.shape)
     print(data)
 
 
 def invoke_genfromtxt(arguments):
     file_name = arguments[0]
+    print("Loading data:", file_name)
     data = np.genfromtxt(file_name, delimiter=",", missing_values="", filling_values=-1)
-    print("Data: ", data.shape)
+    print("Data:", data.shape)
     print(data)
 
 
 def invoke_save(arguments):
     file_name = arguments[0]
     data = np.arange(10)
-    print("Saving data: ", data, " to ", file_name)
+    print("Data:", data.shape)
+    print(data)
+    print("Saving data:", file_name)
     np.save(file_name, data)
 
 
@@ -46,7 +51,11 @@ def invoke_savez(arguments):
     file_name = arguments[0]
     data1 = np.arange(5)
     data2 = np.arange(20,30)
-    print("Saving data to ", file_name)
+    print("Data:", data1.shape)
+    print(data1)
+    print("Data:", data2.shape)
+    print(data2)
+    print("Saving data:", file_name)
     np.savez(file_name, data1=data1, data2=data2)
 
 
@@ -54,14 +63,20 @@ def invoke_savez_compressed(arguments):
     file_name = arguments[0]
     data1 = np.arange(5)
     data2 = np.arange(20,30)
-    print("Saving data to ", file_name)
+    print("Data:", data1.shape)
+    print(data1)
+    print("Data:", data2.shape)
+    print(data2)
+    print("Saving data:", file_name)
     np.savez_compressed(file_name, data1=data1, data2=data2)
 
 
 def invoke_savetxt(arguments):
     file_name = arguments[0]
     data = np.arange(10)
-    print("Saving data to ", file_name)
+    print("Data:", data.shape)
+    print(data)
+    print("Saving data:", file_name)
     np.savetxt(file_name, data)
 
 

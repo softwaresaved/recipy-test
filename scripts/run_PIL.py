@@ -11,18 +11,18 @@ import sys
 
 def invoke_Image_open(arguments):
     file_name = arguments[0]
-    print("Loading image: ", file_name)
+    print("Loading image:", file_name)
     with Image.open(file_name) as f:
-        print("Size: ", f.size)
+        print("Size:", f.size)
 
 
 def invoke_Image_save(arguments):
     in_file_name = arguments[0]
     out_file_name = arguments[1]
-    print("Loading image: ", in_file_name)
+    print("Loading image:", in_file_name)
     with Image.open(in_file_name) as i:
         j = i.rotate(90)
-        print("Saving rotated image: ", out_file_name)
+        print("Saving rotated image:", out_file_name)
         j.save(out_file_name)
 
 

@@ -14,7 +14,7 @@ def invoke_savefig(arguments):
     # Set non-interactive matplotlib back-end.
     matplotlib.use('Agg')
     plt.plot([1,2,3])
-    print("Saving plot: ", file_name)
+    print("Saving plot:", file_name)
     plt.savefig(file_name)
 
 

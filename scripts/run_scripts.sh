@@ -21,3 +21,10 @@ python $MODULE run_numpy.py savetxt data.txt
 
 python $MODULE run_sklearn.py dump_svmlight_file data.svmlight
 python $MODULE run_sklearn.py load_svmlight_file data/data.svmlight
+
+python $MODULE run_skimage.py io.imread data/image.png 
+python $MODULE run_skimage.py io.imsave data/image.png image.png
+python $MODULE run_skimage.py external.tifffile.imread data/image.tiff
+python $MODULE run_skimage.py external.tifffile.imsave data/image.tiff image.tiff
+python $MODULE run_skimage.py io.load_sift data/sift.key 
+python $MODULE run_skimage.py io_load_surf data/image.surf 

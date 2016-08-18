@@ -1,9 +1,9 @@
 """
 Usage:
 
-    python run_numpy.py loadtxt data/data.csv
-    python run_numpy.py fromfile data/data.csv
-    python run_numpy.py genfromtxt data/data_incomplete.csv
+    python run_numpy.py loadtxt data.csv
+    python run_numpy.py fromfile data.csv
+    python run_numpy.py genfromtxt data_incomplete.csv
     python run_numpy.py save data.npy
     python run_numpy.py savez data.npz
     python run_numpy.py savez_compressed dataz.npz

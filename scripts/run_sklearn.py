@@ -2,7 +2,7 @@
 Usage:
 
     python run_sklearn.py dump_svmlight_file data.svmlight
-    python run_sklearn.py load_svmlight_file data/data.svmlight
+    python run_sklearn.py load_svmlight_file data.svmlight
 """
 from __future__ import print_function
 import numpy as np

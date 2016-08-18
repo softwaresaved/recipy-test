@@ -1,30 +1,30 @@
 """
 Usage:
 
-    python run_pandas.py read_csv data/pandas/dataframe.csv
-    python run_pandas.py read_table data/pandas/dataframe.csv
-    python run_pandas.py read_excel data/pandas/dataframe.xls
-    python run_pandas.py read_hdf data/pandas/dataframe.hdf
-    python run_pandas.py read_pickle data/pandas/dataframe.pickle
-    python run_pandas.py read_stata data/pandas/dataframe.dta
-    python run_pandas.py read_msgpack data/pandas/dataframe.mpack
+    python run_pandas.py read_csv dataframe.csv
+    python run_pandas.py read_table dataframe.csv
+    python run_pandas.py read_excel dataframe.xls
+    python run_pandas.py read_hdf dataframe.hdf
+    python run_pandas.py read_pickle dataframe.pickle
+    python run_pandas.py read_stata dataframe.dta
+    python run_pandas.py read_msgpack dataframe.mpack
 
-    python run_pandas.py Panel.to_excel data/pandas/panel.xls
-    python run_pandas.py Panel.to_hdf data/pandas/panel.hdf
-    python run_pandas.py Panel.to_msgpack data/pandas/panel.mpack
-    python run_pandas.py Panel.to_pickle data/pandas/panel.pickle
+    python run_pandas.py Panel.to_excel panel.xls
+    python run_pandas.py Panel.to_hdf panel.hdf
+    python run_pandas.py Panel.to_msgpack panel.mpack
+    python run_pandas.py Panel.to_pickle panel.pickle
 
-    python run_pandas.py DataFrame.to_csv data/pandas/dataframe.csv
-    python run_pandas.py DataFrame.to_excel data/pandas/dataframe.xls
-    python run_pandas.py DataFrame.to_hdf data/pandas/dataframe.hdf
-    python run_pandas.py DataFrame.to_msgpack data/pandas/dataframe.mpack
-    python run_pandas.py DataFrame.to_stata data/pandas/dataframe.dta
-    python run_pandas.py DataFrame.to_pickle data/pandas/dataframe.pickle
+    python run_pandas.py DataFrame.to_csv dataframe.csv
+    python run_pandas.py DataFrame.to_excel dataframe.xls
+    python run_pandas.py DataFrame.to_hdf dataframe.hdf
+    python run_pandas.py DataFrame.to_msgpack dataframe.mpack
+    python run_pandas.py DataFrame.to_stata dataframe.dta
+    python run_pandas.py DataFrame.to_pickle dataframe.pickle
 
-    python run_pandas.py Series.to_csv data/pandas/series.csv
-    python run_pandas.py Series.to_hdf data/pandas/series.hdf
-    python run_pandas.py Series.to_msgpack data/pandas/series.mpack
-    python run_pandas.py Series.to_pickle data/pandas/series.pickle
+    python run_pandas.py Series.to_csv series.csv
+    python run_pandas.py Series.to_hdf series.hdf
+    python run_pandas.py Series.to_msgpack series.mpack
+    python run_pandas.py Series.to_pickle series.pickle
 """
 from __future__ import print_function
 import pandas as pd

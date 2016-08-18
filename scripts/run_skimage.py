@@ -1,14 +1,15 @@
 """
 Usage:
 
-    python run_skimage.py io.imread data/image.png 
-    python run_skimage.py io.imsave data/image.png image.png
-    python run_skimage.py external.tifffile.imread data/image.tiff
-    python run_skimage.py external.tifffile.imsave data/image.tiff image.tiff
-    python run_skimage.py io.load_sift data/sift.key 
-    python run_skimage.py io_load_surf data/image.surf 
+    python run_skimage.py io.imread image.png 
+    python run_skimage.py io.imsave image.png rotated.png
+    python run_skimage.py external.tifffile.imread image.tiff
+    python run_skimage.py external.tifffile.imsave image.tiff rotated.tiff
+    python run_skimage.py io.load_sift sift.key 
+    python run_skimage.py io_load_surf image.surf 
 """
 from __future__ import print_function
+import numpy as np
 from skimage import external
 from skimage import io
 from skimage import transform
@@ -61,6 +62,8 @@ def invoke_external_tifffile_imsave(arguments):
     print("Loading image:", in_file_name)
     data = external.tifffile.imread(in_file_name)
     data = transform.rotate(data, 90)
+    data = 255 * data
+    data = data.astype(dtype=np.uint8)
     print("Saving rotated image:", out_file_name)
     external.tifffile.imsave(out_file_name, data)
 

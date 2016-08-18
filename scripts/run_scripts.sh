@@ -38,3 +38,29 @@ python $MODULE run_skimage.py external.tifffile.imread data/skimage/image.tiff
 python $MODULE run_skimage.py external.tifffile.imsave data/skimage/image.tiff tmp/skimage/image.tiff
 python $MODULE run_skimage.py io.load_sift data/skimage/sift.key 
 python $MODULE run_skimage.py io_load_surf data/skimage/image.surf 
+
+mkdir tmp/pandas
+python $MODULE run_pandas.py read_csv data/pandas/dataframe.csv
+python $MODULE run_pandas.py read_table data/pandas/dataframe.csv
+python $MODULE run_pandas.py read_excel data/pandas/dataframe.xls
+python $MODULE run_pandas.py read_hdf data/pandas/dataframe.hdf
+python $MODULE run_pandas.py read_pickle data/pandas/dataframe.pickle
+python $MODULE run_pandas.py read_stata data/pandas/dataframe.dta
+python $MODULE run_pandas.py read_msgpack data/pandas/dataframe.mpack
+
+python $MODULE run_pandas.py Panel.to_excel tmp/pandas/panel.xls
+python $MODULE run_pandas.py Panel.to_hdf tmp/pandas/panel.hdf
+python $MODULE run_pandas.py Panel.to_msgpack tmp/pandas/panel.mpack
+python $MODULE run_pandas.py Panel.to_pickle tmp/pandas/panel.pickle
+
+python $MODULE run_pandas.py DataFrame.to_csv tmp/pandas/dataframe.csv
+python $MODULE run_pandas.py DataFrame.to_excel tmp/pandas/dataframe.xls
+python $MODULE run_pandas.py DataFrame.to_hdf tmp/pandas/dataframe.hdf
+python $MODULE run_pandas.py DataFrame.to_msgpack tmp/pandas/dataframe.mpack
+python $MODULE run_pandas.py DataFrame.to_stata tmp/pandas/dataframe.dta
+python $MODULE run_pandas.py DataFrame.to_pickle tmp/pandas/dataframe.pickle
+
+python $MODULE run_pandas.py Series.to_csv tmp/pandas/series.csv
+python $MODULE run_pandas.py Series.to_hdf tmp/pandas/series.hdf
+python $MODULE run_pandas.py Series.to_msgpack tmp/pandas/series.mpack
+python $MODULE run_pandas.py Series.to_pickle tmp/pandas/series.pickle

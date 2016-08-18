@@ -1,6 +1,10 @@
 # Scripts to execute recipy-wrapped packages and functions
 
-All the data in `data` was created in-code, using the scripts except for the following:
+All the data in `data` was created in-code, using the scripts, unless otherwise described below.
+
+Pandas pickle file:
+
+* data/pandas/dataframe.pickle was created by running the scripts under Python 2.7 and can be read using both Python 2.7 and 2.4.
 
 NiBabel data files (see third-party copyright and licensing below):
 

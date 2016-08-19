@@ -4,7 +4,7 @@ Mike Jackson, The Software Sustainability Institute / EPCC, The University of Ed
 
 ## Introduction
 
-This report reviews recipy, a provenance framework for Python. This report summarises experiences of, and makes recommendations relating to, deploying and using recipy. It was written as a side-effect of familiarising myself with recipy.
+This report reviews recipy, a provenance framework for Python. This report summarises experiences of, and makes recommendations relating to, deploying and using recipy. It was written as a side-effect of familiarising myself with recipy and identifying possible issues with respect to developing an automated test framework for recipy.
 
 The review used the following resources:
 
@@ -28,26 +28,23 @@ The deployment environments were virtual machines running on:
 
 The following summarises the environments into which recipy was deployed.
 
-| Operating System         | Python                          | Deployed |
-| ------------------------ | ------------------------------- | -------- |
-| Windows 7 Enterprise SP1 |                                 |          |
-|                          | 3.5.2 (Anaconda 4.1.1)          | Yes      |
-| Ubuntu 14.04.3 LTS       |                                 |          |
-| (default Python users)   |                                 |          |
-|                          | 2.7.6                           | Yes      |
-|                          | 3.4.3                           | Yes      |
-|                          | 2.7.6 + virtualenv 15.0.2       |          |
-|                          | 3.4.3 + virtualenv 15.0.2       | Yes      |
-|                          | 2.7.6 + virtualenvwrapper 4.7.1 |          |
-|                          | 3.4.3 + virtualenvwrapper 4.7.1 | Yes      |
-| Docker 1.12.0            |                                 |          |
-| (Ubuntu 14.04.4 LTS)     |                                 |          |
-|                          | 3.4.3                           | Yes      |
-| Ubuntu 14.04.3 LTS       |                                 |          |
-| (local Python users)     |                                 |          |
-|                          | 3.5.2 (Anaconda 4.1.1)          | Yes      |
-|                          | 2.7.4 (pyenv 20160726)          |          |
-|                          | 3.4.0 (pyenv 20160726)          | Yes      |
+| Operating System         | Python                          |
+| ------------------------ | ------------------------------- |
+| Windows 7 Enterprise SP1 |                                 |
+|                          | 3.5.2 (Anaconda 4.1.1)          |
+| Ubuntu 14.04.3 LTS       |                                 |
+| (default Python users)   |                                 |
+|                          | 2.7.6                           |
+|                          | 3.4.3                           |
+|                          | 3.4.3 + virtualenv 15.0.2       |
+|                          | 3.4.3 + virtualenvwrapper 4.7.1 |
+| Docker 1.12.0            |                                 |
+| (Ubuntu 14.04.4 LTS)     |                                 |
+|                          | 3.4.3                           |
+| Ubuntu 14.04.3 LTS       |                                 |
+| (local Python users)     |                                 |
+|                          | 3.5.2 (Anaconda 4.1.1)          |
+|                          | 3.4.0 (pyenv 20160726)          |
 
 The default Python package location for each Python version was used, except for the virtualenv environment where recipy was installed into a virtual environment in the user's local directory.
 
@@ -80,6 +77,7 @@ For information on how virtual machines were set up and these packages installed
 * Current [production releases](http://legacy.python.org/download/releases/) of Python 3.4.0 and 2.7.6 for Mac OS X and Windows.
 * Anaconda 4.1.1 for Mac OS X.
 * Enthought [Canopy](https://www.enthought.com/products/canopy/) 1.7.4 for Windows, Linux and Mac. Canopy is a scientific Python bundle with Python 2.7.11 and 200+ Python packages including numpy, pandas, matplotlib, Pillow, scikit-learn, scikit-image, GDAL (of the packages logged by recipy, only NiBabel is not present).
+* [Jupyter Notebook](https://ipython.org/notebook.html) interactive computation environment (already logged as recipy issue [106](https://github.com/recipy/recipy/issues/106)).
 * pyenv [deployment on Mac OS X](https://github.com/yyuu/pyenv#homebrew-on-mac-os-x) via the [HomeBrew](http://brew.sh/) package manager.
 * [conda](http://conda.pydata.org/docs/) 4.1. conda is both a package manager and, like virtualenv, a virtual environment manager. It can be used with Python 2.7, 3.4 or 3.5 under Windows, Linux and Mac. Unlike virtualenv, conda can be used to create virtual environments if using Anaconda.
 
@@ -94,7 +92,7 @@ The following versions of recipy were used:
 
 The following [scripts](./scripts) were used to check that a recipy deployment was operating correctly, using numpy as an example of a package logged by recipy.
 
-[check-recipy.py](./check-recipy.py):
+[check-recipy.py](./scripts/check-recipy.py):
 
 ```
 import numpy as np
@@ -103,7 +101,7 @@ data = np.array([list(range(4,8)), list(range(12,16))])
 np.savetxt("file.csv", data, delimiter=",")
 ```
 
-[check-recipy-import.py](./check-recipy-import.py):
+[check-recipy-import.py](./scripts/check-recipy-import.py):
 
 ```
 import recipy
@@ -115,7 +113,7 @@ np.savetxt("file-import.csv", data, delimiter=",")
 
 The following script was used to check recipy's wrappers for Python's `open` command:
 
-[check-recipy-open.py](./check-recipy-open.py):
+[check-recipy-open.py](./scripts/check-recipy-open.py):
 
 ```
 import recipy
@@ -133,9 +131,9 @@ Suggestions arising from the deployment and use of recipy are as follows.
 
 ### Functionality
 
-During `recipy annotate`, configure the editor to show the current notes so these can be edited without the need for the user to copy them from the bottom of the file.
+**Suggestion:** During `recipy annotate`, configure the editor to show the current notes so these can be edited without the need for the user to copy them from the bottom of the file.
 
-If `~/.recipy/recipyrc` is created of form:
+**Suggestion:** If `~/.recipy/recipyrc` is created of form:
 
 ```
 [data]
@@ -144,15 +142,15 @@ file_diff_outputs
 
 then file diffs between runs are visible within `recipy gui`. But, they are not visible via the command line. Provide some way for these to be returned.
 
-`recipy gui` page http://127.0.0.1:9000/patched_modules shows the packages, input and output functions logged by recipy. These are queried by `recipyGui/views.py` from the recipy database, from within its `patches` table. This table is populated when the `recipy` package is first used (via `__init.py__` and `PatchWarnings.py`, `PatchBaseScientific.py`, `PatchScientific.py`). Write a script that runs comparable commands to create a MarkDown page of the packages and functions that can then form part of the user documentation. Users would be able to see a list of the packages and functions, without having to install recipy and run `recipy gui`.
+**Suggestion:** `recipy gui` page http://127.0.0.1:9000/patched_modules shows the packages, input and output functions logged by recipy. These are queried by `recipyGui/views.py` from the recipy database, from within its `patches` table. This table is populated when the `recipy` package is first used (via `__init.py__` and `PatchWarnings.py`, `PatchBaseScientific.py`, `PatchScientific.py`). Write a script that runs comparable commands to create a MarkDown page of the packages and functions that can then form part of the user documentation. Users would be able to see a list of the packages and functions, without having to install recipy and run `recipy gui`.
 
-Develop a tool that uses reflection to traverse the functions of a package and print out the names of functions (and, if possible, their "help" information) that might be candidate input/output functions that should be logged by recipy (e.g. functions with names such as `input/output`, `read/write`, `load/save`). Such a tool could help those who want to develop recipy wrappers for additional packages.
+**Suggestion:** Develop a tool that uses reflection to traverse the functions of a package and print out the names of functions (and, if possible, their "help" information) that might be candidate input/output functions that should be logged by recipy (e.g. functions with names such as `input/output`, `read/write`, `load/save`). Such a tool could help those who want to develop recipy wrappers for additional packages.
 
 ### Documentation
 
-Provide a list of the packages, and their functions, that are logged by recipy, so users can see these without having to install recipy and run `recipy gui`.
+**Suggestion:** Provide a list of the packages, and their functions, that are logged by recipy, so users can see these without having to install recipy and run `recipy gui`.
 
-`README.md` states that:
+**Suggestion:** `README.md` states that:
 
 > it will produce an output called test.npy. To find out the details of the run which created this file you can search using
 > recipy search test.npy
@@ -163,23 +161,23 @@ Rephrase this to:
 
 to reinforce that it's the sample script, and not recipy, that produces `test.npy`.
 
-Provide examples of `recipy gui` search strings.
+**Suggestion:** Provide examples of `recipy gui` search strings.
 
-As not all command-line options apply to all commands, provide information, via the usage information and in the documentation, on which options apply to which commands.
+**Suggestion:** As not all command-line options apply to all commands, provide information, via the usage information and in the documentation, on which options apply to which commands.
 
-Explain the difference between `fuzzy` and `regex` searching, and provide examples of fuzzy and regular expression patterns.
+**Suggestion:** Explain the difference between `fuzzy` and `regex` searching, and provide examples of fuzzy and regular expression patterns.
 
-Provide examples of using absolute paths with `recipy search`.
+**Suggestion:** Provide examples of using absolute paths with `recipy search`.
 
-Add a note that files can be searched for even if they no longer exist, and a complementary caution that just because a file exists in the recipy database it does not necessarily exist in reality.
+**Suggestion:** Add a note that files can be searched for even if they no longer exist, and a complementary caution that just because a file exists in the recipy database it does not necessarily exist in reality.
 
-Describe how and when `--diff` will show the `diff` i.e. if the commit is newer than the most recent files is what it seems to do.
+**Suggestion:** Describe how and when `--diff` will show the `diff` i.e. if the commit is newer than the most recent files is what it seems to do.
 
-Provide brief descriptions, with sample inputs and outputs for every command.
+**Suggestion:** Provide brief descriptions, with sample inputs and outputs for every command.
 
-Document the need to set the `EDITOR` variable, using `export EDITOR=...`, and that user can override their default e.g. if they want nano rather than vi.
+**Suggestion:** Document the need to set the `EDITOR` variable, using `export EDITOR=...`, and that user can override their default e.g. if they want nano rather than vi.
 
-Provide troubleshooting information that if the user sees a message like:
+**Suggestion:** Provide troubleshooting information that if the user sees a message like:
 
 ```
 $ recipy annotate
@@ -194,33 +192,53 @@ No annotation entered, exiting.
 
 on Linux, then they should set the `EDITOR` variable.
 
-State that only the latest run can be annotated via `recipy annotate`.
+**Suggestion:** State that only the latest run can be annotated via `recipy annotate`.
 
-State that annotations are completely overwritten when running `recipy annotate`, and that if the user wants to retain their current notes they should copy them from the lower-half of the editor.
+**Suggestion:** State that annotations are completely overwritten when running `recipy annotate`, and that if the user wants to retain their current notes they should copy them from the lower-half of the editor.
 
-State that, if default/system-wide Python distributions are being used on Linux then `sudo` access is required when running `pip` or `python setup.py install`.
+**Suggestion:** State that, if default/system-wide Python distributions are being used on Linux then `sudo` access is required when running `pip` or `python setup.py install`.
 
-State that, if default/system-wide Python 2 and 3 distributions co-exist on Linux, then the user needs to use `pip3` and `python3` for Python 3-related operations.
+**Suggestion:** State that, if default/system-wide Python 2 and 3 distributions co-exist on Linux, then the user needs to use `pip3` and `python3` for Python 3-related operations.
 
-`README.md` comments that:
+**Suggestion:** `README.md` comments that:
 
 > If you want to log inputs and outputs of files read or written with built-in open, you need to do a little more work. Either use `recipy.open` (only requires import recipy at the top of your script), or add `from recipy import open` and just use `open`. This workaround is required, because many libraries use built-in open internally, and you only want to record the files you explicitly opened yourself.
 > If you use Python 2, you can pass an `encoding` parameter to `recipy.open`. In this case `codecs` is used to open the file with proper encoding.
 
 Describe whether `recipy.open` has the same function signature as `open` (with the additional `encoding` parameter) or whether it changes it, in which case describe the altered signature.
 
-State whether `git` is needed on Windows or Linux to use recipy. It is clear that it is needed for its Git-related functionality, and the `hash_inputs`, `hash_outputs` and `diff` configuration options, but not for other functionality.
+**Suggestion:** State whether `git` is needed on Windows or Linux to use recipy. It is clear that it is needed for its Git-related functionality, and the `hash_inputs`, `hash_outputs` and `diff` configuration options, but not for other functionality.
 
-If `~/.recipy/recipyrc` is created of form:
+**Suggestion:** If `~/.recipy/recipyrc` is created of form:
 
 ```
 [data]
 file_diff_outputs
 ```
 
-then file diffs between runs are visible within `recipy gui`. It is not clear how to view these at the command-line.
+then file diffs between runs are visible within `recipy gui`. It is not clear how to view these at the command-line, so clarify this.
 
-Provide guidelines on how to use recipy in a research workflow e.g. how to use recipy and Git to record provenance and recommended ways of archiving input/output files etc.
+**Suggestion:** Provide guidelines on how to use recipy in a research workflow e.g. how to use recipy and Git to record provenance and recommended ways of archiving input/output files etc.
+
+**Suggestion:** Document how to install dependencies and run tests e.g.
+
+```
+$ pip install -r requirements.txt
+$ pip install -r test_requirements.txt 
+```
+
+and:
+
+```
+$ python setup.py test
+```
+
+or:
+
+```
+$ py.test test
+$ py.test recipyGui/tests
+```
 
 ---
 
@@ -230,7 +248,7 @@ Issues arising from the deployment and use of recipy are as follows.
 
 ### recipy 0.2.3 and dd2b7ae96b99ca6d3678f8236ca97ec5ad672454
 
-Allow use of full IDs when searching and also provide a `recipy get ID` command. It feels counter-intuitive that a partial match succeeds:
+**Issue:** Allow use of full IDs when searching and also provide a `recipy get ID` command. It feels counter-intuitive that a partial match succeeds:
 
 ```
 $ recipy search -i 23bf2fd2-b67a-46c1-9fd8-960e71d32f2
@@ -244,7 +262,7 @@ $ recipy search -i 23bf2fd2-b67a-46c1-9fd8-960e71d32f2f
 No results found
 ```
 
-Under Windows, I tried using `.bashrc` and `.bash_profile` to set `EDITOR`, and also tried running these commands within the Anaconda Python Prompt, rather than the Git Bash prompt, but with no success:
+**Issue:** Under Windows, I tried using `.bashrc` and `.bash_profile` to set `EDITOR`, and also tried running these commands within the Anaconda Python Prompt, rather than the Git Bash prompt, but with no success:
 
 ```
 $ recipy annotate
@@ -258,9 +276,9 @@ $ recipy annotate
 ...as above...
 ```
 
-Resolve this issue or, if it cannot be resolved, recommend that Windows/Git Bash/Anaconda users use `recipy gui`.
+Resolve this issue or, if it cannot be resolved, recommend that Windows/Git Bash/Anaconda users use `recipy gui` (already logged as recipy issue [98](https://github.com/recipy/recipy/issues/98)).
 
-`recipy latest` raises `IndexError: list index out of range` if there are no runs:
+**Issue:** `recipy latest` raises `IndexError: list index out of range` if there are no runs:
 
 ```
 $ recipy latest
@@ -276,13 +294,13 @@ Traceback (most recent call last):
 IndexError: list index out of range
 ```
 
-Catch this error and print a suitable error message e.g. `You have not recorded any runs`.
+Catch this error and print a suitable error message e.g. `You have not recorded any runs` (already logged as recipy issue [118](https://github.com/recipy/recipy/issues/118))
 
 ### recipy 2.3.0
 
-Searches of the `recipy gui` web pages did not work. I tried using `mjj`, `file-import.csv`, `C:\Users\mjj\deployment\file` for Windows and `/home/ubuntu/deployment/file` for Ubuntu and, for each, got a `HTTP 500 Interal Server Error`.
+**Issue:** Searches of the `recipy gui` web pages did not work. I tried using `mjj`, `file-import.csv`, `C:\Users\mjj\deployment\file` for Windows and `/home/ubuntu/deployment/file` for Ubuntu and, for each, got a `HTTP 500 Interal Server Error`.
 
-`recipy.open` seems to be unsupported in 0.2.3:
+**Issue:** `recipy.open` seems to be unsupported in 0.2.3:
 
 ```
 $ python check-recipy-open.py
@@ -306,9 +324,9 @@ It looks like this feature and information was added to recipy and `README.md` s
 
 ### recipy dd2b7ae96b99ca6d3678f8236ca97ec5ad672454
 
-The recipy 0.2.3 package was [tagged](https://github.com/recipy/recipy/releases/tag/v0.2.3) on 17/11/2015. There have been many commits since then, so the current state of the repository, on GitHub, is no longer version 0.2.3 but, at least, 0.2.4. I'd recommend upping the version number in `setup.py` immediately after you tag a release, or at the first time you make a commit after tagging the release.
+**Issue:** The recipy 0.2.3 package was [tagged](https://github.com/recipy/recipy/releases/tag/v0.2.3) on 17/11/2015. There have been many commits since then, so the current state of the repository, on GitHub, is no longer version 0.2.3 but, at least, 0.2.4. I'd recommend upping the version number in `setup.py` immediately after you tag a release, or at the first time you make a commit after tagging the release.
 
-There is inconsistency between `README.md` and `recipy gui` in terms of logged packages:
+**Issue:** There is inconsistency between `README.md` and `recipy gui` in terms of logged packages:
 
 * `recipy gui` statues that `lxml.etree` and `bs4` packages are logged (which is the case as `recipy gui` gets this information from the recipy database which is, in turn, populated by the recipy components that do this logging.
 * `README.md` states that `scikit-image` and `pillow` are logged. However, this code is commented out in `recipy/PatchScientific.py` (in both the current version and in version 0.2.3)
@@ -317,7 +335,7 @@ Adopting the earlier suggestion of auto-generating user documentation would redu
 
 If the `scikit-image` and `pillow` in `recipy/PatchScientific.py` was accidently commented out then restore it. If it needs to be fixed then add a comment stating such and create an associated GitHub issue. Otherwise, just remove it from the file.
 
-Under Windows `recipy search file-import.csv` raises `sre_constants.error: incomplete escape \U at position 2` using Git Bash and Anaconda Python prompts:
+**Issue:** Under Windows `recipy search file-import.csv` raises `sre_constants.error: incomplete escape \U at position 2` using Git Bash and Anaconda Python prompts:
 
 ```
 $ recipy search file-import.csv
@@ -365,7 +383,7 @@ in <listcomp>
 sre_constants.error: incomplete escape \U at position 2
 ```
 
-`recipy latest -j` and other commands supporting `j`  raise `TypeError: datetime.datetime(2016, 8, 12, 8, 49, 22) is not JSON serializable`:
+**Issue:** `recipy latest -j` and other commands supporting `j`  raise `TypeError: datetime.datetime(2016, 8, 12, 8, 49, 22) is not JSON serializable`:
 
 ```
 $ recipy latest -j
@@ -393,9 +411,9 @@ TypeError: datetime.datetime(2016, 8, 12, 8, 49, 22) is not JSON serializable
 
 Note that JSON documents can be downloaded via `recipy gui`.
 
-Under Windows, a `recipy gui` search for `C:\Users\mjj\deployment\file` fails, but succeeds for `C:\\Users\\mjj\\deployment\\file`. Update the search code to escape `\` in file paths.
+**Issue:** Under Windows, a `recipy gui` search for `C:\Users\mjj\deployment\file` fails, but succeeds for `C:\\Users\\mjj\\deployment\\file`. Update the search code to escape `\` in file paths.
 
-Using `recipy.open` (`with recipy.open('file-open.txt', 'w') as f:`) gives a gives an `ValueError: I/O operation on closed file`, with Python 2:
+**Issue:** Using `recipy.open` (`with recipy.open('file-open.txt', 'w') as f:`) gives a gives an `ValueError: I/O operation on closed file`, with Python 2:
 
 ```
 $ python check-recipy-open.py
@@ -483,7 +501,7 @@ ValueError: I/O operation on closed file.
 
 The above implies that `recipy.open` does not seem to support the same signature as Python `open`. I would expect it would support the same signature.
 
-Investigate how to access a `recipy gui` service running within a Docker container, from within the container's host. Using
+**Issue:** Investigate how to access a `recipy gui` service running within a Docker container, from within the container's host. Using
 
 ```
 $ docker run -it -v $HOME/docker-shared:/home/ubuntu/shared -p 9000:9000 --rm mikej888/recipy:2.3.0 
@@ -537,7 +555,7 @@ Similarly if the URL http://127.0.0.1:5000 was pinged from the host.
 
 Maybe this has to do with how the Flask framework, which is used to implement `recipy gui` is configured.
 
-When the command `python3 setup.py install` is run when creating the Docker container, an error arises:
+**Issue:** When the command `python3 setup.py install` is run when creating the Docker container, an error arises:
 
 ```
 Flask-WTF 0.12 is already the active version in easy-install.pth
@@ -569,7 +587,7 @@ RUN cd recipy && python3 setup.py install
 
 but this is hacky!
 
-Running `python setup.py install` with pyenv does not result in the `recipy` executable being available:
+**Issue:** Running `python setup.py install` with pyenv does not result in the `recipy` executable being available:
 
 ```
 $ recipy --version
@@ -634,53 +652,215 @@ recipy v0.2.3
 
 Document the workaround `pyenv rehash && hash -r` in the short-term and track down a possible automated solution in the longer term.
 
+**Issue:** `python setup.py test` seems to find no tests under Python 2.7.6 e.g.:
+
+```
+$ python setup.py test
+running test
+running egg_info
+writing requirements to recipy.egg-info/requires.txt
+writing recipy.egg-info/PKG-INFO
+writing top-level names to recipy.egg-info/top_level.txt
+writing dependency_links to recipy.egg-info/dependency_links.txt
+writing entry points to recipy.egg-info/entry_points.txt
+reading manifest file 'recipy.egg-info/SOURCES.txt'
+reading manifest template 'MANIFEST.in'
+writing manifest file 'recipy.egg-info/SOURCES.txt'
+running build_ext
+
+----------------------------------------------------------------------
+Ran 0 tests in 0.000s
+
+OK
+```
+
+whereas 
+
+```
+$ py.test test
+$ py.test recipyGui/tests
+```
+
+both succeed. Try and find the reason for, and a solution to, this.
+
+**Issue:** Running:
+
+```
+$ py.test test
+```
+
+under Python 2 or 3 shows a test failure:
+
+```
+============================= test session starts ==============================
+platform linux -- Python 3.5.2, pytest-2.9.2, py-1.4.31, pluggy-0.3.1
+rootdir: /home/ubuntu/recipy, inifile: 
+collected 14 items / 1 errors 
+
+test/test_libraryversions.py ..
+test/test_tinydb_utils.py .........
+test/test_utils.py ...
+
+==================================== ERRORS ====================================
+_____________________ ERROR collecting test/test_config.py _____________________
+test/test_config.py:3: in <module>
+    import fake_filesystem_unittest
+E   ImportError: No module named 'fake_filesystem_unittest'
+====================== 14 passed, 1 error in 0.39 seconds ======================
+```
+
+This seems to arise due to changes in [pyfakefs](https://github.com/jmcgeheeiv/pyfakefs), one of the requirements listed in `test_requirements.txt`. A fix is to edit test/test_config.py and replace
+
+```
+import fake_filesystem_unittest
+```
+
+with
+
+```
+from pyfakefs import fake_filesystem_unittest
+```
+
+```
+$ py.test test
+============================= test session starts ==============================
+platform linux -- Python 3.5.2, pytest-2.9.2, py-1.4.31, pluggy-0.3.1
+rootdir: /home/ubuntu/recipy, inifile: 
+collected 15 items 
+
+test/test_config.py .
+test/test_libraryversions.py ..
+test/test_tinydb_utils.py .........
+test/test_utils.py ...
+
+========================== 15 passed in 0.52 seconds ===========================
+```
+
+**Issue:** Running `py.test recipyGui/tests/` shows test failures under Python 3.5.2:
+
+```
+$ py.test recipyGui/tests/
+============================= test session starts ==============================
+platform linux -- Python 3.5.2, pytest-2.9.2, py-1.4.31, pluggy-0.3.1
+rootdir: /home/ubuntu/recipy, inifile: 
+collected 9 items 
+
+recipyGui/tests/test_filters.py ...
+recipyGui/tests/test_recipyGui.py F.F...
+
+=================================== FAILURES ===================================
+__________________ TestRecipyGui.test_dbfile_is_set_in_views ___________________
+
+self = <recipyGui.tests.test_recipyGui.TestRecipyGui testMethod=test_dbfile_is_set_in_views>
+
+    def test_dbfile_is_set_in_views(self):
+        """The database file should be displayed in the index, and run_details
+            views.
+            """
+        eid = self.db.insert(self.testRuns[0])
+    
+        views = ['/', '/run_details?id={}'.format(eid)]
+    
+        for v in views:
+            response = self.client.get(v)
+            dbfile2 = self.get_context_variable('dbfile')
+            # is the right value set?
+            self.assertEqual(recipyGui.config.get('tinydb'), dbfile2)
+            # is the value displayed?
+>           assert recipyGui.config.get('tinydb') in response.data
+E           TypeError: a bytes-like object is required, not 'str'
+
+recipyGui/tests/test_recipyGui.py:202: TypeError
+_________________ TestRecipyGui.test_display_warnings_in_views _________________
+
+self = <recipyGui.tests.test_recipyGui.TestRecipyGui testMethod=test_display_warnings_in_views>
+
+    def test_display_warnings_in_views(self):
+        """If the run contains warnings, they must be displayed in the index
+            and run_details view.
+            """
+        for run in self.testRuns:
+            eid = self.db.insert(run)
+            response = self.client.get('/run_details?id={}'.format(eid))
+            if 'warnings' in run.keys():
+                if run['warnings'] != []:
+                    for w in run['warnings']:
+                        assert w['message'] in response.data
+                else:
+                    assert 'Warnings' not in response.data
+            else:
+>               assert 'Warnings' not in response.data
+E               TypeError: a bytes-like object is required, not 'str'
+
+recipyGui/tests/test_recipyGui.py:218: TypeError
+====================== 2 failed, 7 passed in 0.64 seconds =====================
+```
+
+Under Python 3.4.0 there are two slightly different errors but from the same source:
+
+```
+__________________ TestRecipyGui.test_dbfile_is_set_in_views ___________________
+
+...
+
+>           assert recipyGui.config.get('tinydb') in response.data
+E           TypeError: Type str doesn't support the buffer API
+
+recipyGui/tests/test_recipyGui.py:202: TypeError
+_________________ TestRecipyGui.test_display_warnings_in_views _________________
+
+...
+
+>               assert 'Warnings' not in response.data
+E               TypeError: Type str doesn't support the buffer API
+
+recipyGui/tests/test_recipyGui.py:218: TypeError
+```
+
+Under Python 2.7.12 they pass:
+
+```
+$ py.test recipyGui/tests
+============================= test session starts ==============================
+platform linux2 -- Python 2.7.12, pytest-2.9.2, py-1.4.31, pluggy-0.3.1
+rootdir: /home/ubuntu/recipy, inifile: 
+collected 9 items 
+
+recipyGui/tests/test_filters.py ...
+recipyGui/tests/test_recipyGui.py ......
+
+=========================== 9 passed in 0.58 seconds ===========================
+```
+
+The problem arises due to a change in types. In Python 2 `response.data` has type `str`, but in Python 3 it has type `bytes`. One fix is to change the lines:
+
+```
+assert recipyGui.config.get('tinydb') in response.data
+
+assert w['message'] in response.data
+
+assert 'Warnings' not in response.data
+
+assert 'Warnings' not in response.data
+```
+
+to:
+
+```
+assert recipyGui.config.get('tinydb') in response.data.decode()
+
+assert w['message'] in response.data.decode()
+
+assert 'Warnings' not in response.data.decode()
+
+assert 'Warnings' not in response.data.decode()
+```
+
 ---
 
-## Other examples
+## An observation on versioning
 
-The packages, input and output functions currently logged are:
-
-pandas
-
-* read_csv, read_table, read_excel, read_hdf, read_pickle, read_stata, read_msgpack
-* DataFrame.to_csv, DataFrame.to_excel, DataFrame.to_hdf, DataFrame.to_msgpack, DataFrame.to_stata, DataFrame.to_pickle, Panel.to_excel, Panel.to_hdf, Panel.to_msgpack, Panel.to_pickle, Series.to_csv, Series.to_hdf, Series.to_msgpack, Series.to_pickle
-
-matplotlib.pyplot
-
-* None
-* savefig
-
-numpy
-
-* genfromtxt, loadtxt, fromfile
-* save, savez, savez_compressed, savetxt
-
-lxml.etree
-
-* parse, iterparse
-* None
-
-bs4
-
-* BeautifulSoup
-* None
-
-gdal
-
-* Open
-* Driver.Create, Driver.CreateCopy
-
-sklearn
-
-* datasets.load_svmlight_file
-* datasets.dump_svmlight_file
-
-nibabel
-
-* nifti1.Nifti1Image.from_filename, nifti2.Nifti2Image.from_filename, freesurfer.mghformat.MGHImage.from_filename, spm99analyze.Spm99AnalyzeImage.from_filename, minc1.Minc1Image.from_filename, minc2.Minc2Image.from_filename, analyze.AnalyzeImage.from_filename, parrec.PARRECImage.from_filename, spm2analyze.Spm2AnalyzeImage.from_filename
-* nifti1.Nifti1Image.to_filename, nifti2.Nifti2Image.to_filename, freesurfer.mghformat.MGHImage.to_filename, spm99analyze.Spm99AnalyzeImage.to_filename, minc1.Minc1Image.to_filename, minc2.Minc2Image.to_filename, analyze.AnalyzeImage.to_filename, parrec.PARRECImage.to_filename, spm2analyze.Spm2AnalyzeImage.to_filename
-
-**TODO** Write and run one sample script for more package/function recipy can log (look at the recipy source code) These can form basis of test scripts.
+A general observation is that recipy logs packages which may currently exist in various versions depending upon how a researcher has installed them and into what environment. For example a package may run under Python 2 but not Python 3, an Ubuntu package installed via `apt-get python-*` may lag behind more recent versions, as may those bundled in distributions such as Anaconda or Canopy. Complicating matters futher, input/ouput functions logged by recipy may be deprecated by package developers and new input/output functions written to replace these. recipy should document not only what packages and functions it logs but also what versions of packages it has been tested against. Whether a single version of recipy can support multiple versions of the same package, differing in their input/ouput functions should also be explored and documented.
 
 ---
 
@@ -716,7 +896,7 @@ scikit-image==0.12.3
 scikit-learn==0.17.1
 ```
 
-I didn't install GDAL due to the additional Windows-specific install process. 
+I didn't install GDAL due to an additional Windows-specific install process. 
 
 ### Ubuntu 14.04.3 LTS virtual machine (default Python users)
 
@@ -750,7 +930,7 @@ pip freeze
 ```
 ```
 GDAL==1.10.1
-Pillow==2.3.0b
+Pillow==2.3.0
 beautifulsoup4==4.2.1
 lxml==3.3.3
 matplotlib==1.3.1
@@ -768,6 +948,8 @@ sudo su -
 apt-get install -y python3-numpy python3-scipy python3-matplotlib python3-pandas python3-nose
 apt-get install -y python3-pip
 apt-get install -y python3-setuptools
+pip3 install xlwt
+apt-get install -y python3-h5py
 ```
 
 Install packages logged by recipy:
@@ -822,224 +1004,6 @@ pip install virtualenvwrapper
 pip3 install virtualenvwrapper
 ```
 
-### Ubuntu 14.04.3 LTS virtual machine (local Python users)
-
-**Anaconda 4.1.1**
-
-Install Anaconda with Python 2.7.12 and packages:
-
-```
-wget http://repo.continuum.io/archive/Anaconda2-4.1.1-Linux-x86_64.sh
-bash Anaconda2-4.1.1-Linux-x86_64.sh
-```
-
-Create `use-anaconda2.sh` to set up environment (usually this goes into `.bashrc`, but I didnt't want its paths to interfere with Anaconda Python 3 or pyenv):
-
-```
-export PATH=/home/ubuntu/anaconda2/bin:$PATH
-```
-
-Install packages logged by recipy:
-
-```
-source use-anaconda2.sh
-
-pip install nibabel
-apt-get install -y libgdal-dev
-export CPLUS_INCLUDE_PATH=/usr/include/gdal
-export C_INCLUDE_PATH=/usr/include/gdal
-easy_install "GDAL==1.10.0"
-```
-
-Check package versions:
-
-```
-pip freeze
-```
-```
-GDAL==1.10.0
-beautifulsoup4==4.4.1
-lxml==3.6.0
-matplotlib==1.5.1
-nibabel==2.0.2
-numpy==1.11.1
-pandas==0.18.1
-Pillow==3.2.0
-scikit-image==0.12.3
-scikit-learn==0.17.1
-```
-
-The current version of GDAL, 2.1.0, needs libgdal 1.11.0 or greater. apt-get install -ys version 1.9.0-1~. Running `apt-get install -y python-gdal`, on the default Python users VM, showed it to install Python GDAL 1.10.1. easy_install failed to find 1.10.1. `pip install GDAL=1.10.0` showed that the closest match was 1.10.0.
-
-Install Anaconda with Python 3.5.2 and packages:
-
-```
-wget http://repo.continuum.io/archive/Anaconda3-4.1.1-Linux-x86_64.sh
-bash Anaconda3-4.1.1-Linux-x86_64.sh
-```
-
-Create `use-anaconda3.sh` to set up environment:
-
-```
-export PATH=/home/ubuntu/anaconda3/bin:$PATH
-```
-
-Install packages logged by recipy:
-
-```
-source use-anaconda3.sh
-
-pip install nibabel
-apt-get install -y libgdal-dev
-export CPLUS_INCLUDE_PATH=/usr/include/gdal
-export C_INCLUDE_PATH=/usr/include/gdal
-easy_install "GDAL==1.10.0"
-```
-
-Check package versions:
-
-```
-pip freeze
-```
-```
-GDAL==1.10.0
-beautifulsoup4==4.4.1
-lxml==3.6.0
-matplotlib==1.5.1
-nibabel==2.0.2
-numpy==1.11.1
-pandas==0.18.1
-Pillow==3.2.0
-scikit-image==0.12.3
-scikit-learn==0.17.1
-```
-
-**pyenv 20160726**
-
-Install pyenv:
-
-```
-sudo su -
-apt-get install -y git
-apt-get install -y make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm
-curl -L https://raw.githubusercontent.com/yyuu/pyenv-installer/master/bin/pyenv-installer | bash
-```
-
-Create `use-pyenv.sh` to set up environment (usually this goes into `.bash_profile`, but I didn't want its paths to interfere with Anaconda Python 3 or virtualenv):
-
-```
-export PATH="$HOME/.pyenv/bin:$PATH"
-eval "$(pyenv init -)"
-eval "$(pyenv virtualenv-init -)"
-```
-
-Install Python 2.7.6 and 3.4.0 within pyenv:
-
-```
-source use-pyenv.sh
-pyenv update
-pyenv install -l
-pyenv install 2.7.6
-pyenv install 3.4.0
-```
-
-Ubuntu package pre-requisites can be assumed to have been installed when installing Anaconda.
-
-Install Python 2 packages packages logged by recipy:
-
-```
-source use-pyenv.sh 
-mkdir py2dir
-cd py2dir/
-pyenv local 2.7.6
-pip install numpy
-pip install scipy
-sudo apt-get install -y libfreetype6-dev
-pip install matplotlib
-pip install pandas
-pip install nose
-pip install pillow
-pip install scikit-learn
-pip install scikit-image
-pip install nibabel
-sudo apt-get install -y libxslt1-dev
-pip install lxml
-pip install beautifulsoup4
-export CPLUS_INCLUDE_PATH=/usr/include/gdal
-export C_INCLUDE_PATH=/usr/include/gdal
-easy_install "GDAL==1.10.0"
-```
-
-Check package versions:
-
-```
-pip freeze
-```
-```
-GDAL==1.10.0
-beautifulsoup4==4.5.1
-
-matplotlib==1.5.1
-nibabel==2.0.2
-numpy==1.11.1
-pandas==0.18.1
-Pillow==3.3.0
-scikit-image==0.12.3
-scikit-learn==0.17.1
-```
-
-Install Python 3 packages packages logged by recipy:
-
-```
-source use-pyenv.sh 
-mkdir py3dir
-cd py3dir/
-pyenv local 3.4.0
-pip install numpy
-sudo apt-get install -y libblas-dev liblapack-dev gfortran
-pip install scipy
-pip install matplotlib
-pip install pandas
-pip install nose
-pip install pillow=="3.2.10"
-pip install scikit-learn
-pip install scikit-image
-pip install nibabel
-pip install lxml
-pip install beautifulsoup4
-export CPLUS_INCLUDE_PATH=/usr/include/gdal
-export C_INCLUDE_PATH=/usr/include/gdal
-easy_install "GDAL==1.10.0"
-```
-
-Check package versions:
-
-```
-pip freeze
-```
-```
-GDAL==1.10.0
-Pillow==3.2.0
-beautifulsoup4==4.5.1
-lxml==3.6.1
-matplotlib==1.5.1
-nibabel==2.0.2
-numpy==1.11.1
-pandas==0.18.1
-scikit-image==0.12.3
-scikit-learn==0.17.1
-```
-
-Installing the current Pillow gives an error under Python 3:
-
-```
-pip install pillow
-
-Tk/tkImaging.c:396:5: error: ISO C90 forbids mixed declarations and code [-Werror=declaration-after-statement]
-```
-
-which has been [noted by others](https://github.com/python-pillow/Pillow/issues/2017). So I installed the same version as for Python 2 (3.2.0) as suggested by others.
-
 ### Docker 1.12.0 and Ubuntu 14.04.4 LTS 
 
 Install Docker:
@@ -1059,7 +1023,7 @@ mkdir recipy-docker
 cd recipy-docker
 ```
 
-Write a [Dockerfile](./Dockerfile) to install the packages that recipy can log and other useful tools:
+Write a [Dockerfile](./docker/Dockerfile) to install the packages that recipy can log and other useful tools:
 
 ```
 FROM ubuntu:trusty-20160217
@@ -1070,7 +1034,7 @@ RUN apt-get install -y git
 RUN apt-get install -y python3-numpy
 RUN apt-get install -y python3-scipy
 RUN apt-get install -y python3-matplotlib
-RUN apt-get install -y python3-pandas python3-nose
+RUN apt-get install -y python3-pandas
 RUN apt-get install -y python3-nose
 RUN apt-get install -y python3-pip
 RUN apt-get install -y python3-setuptools
@@ -1079,6 +1043,8 @@ RUN pip3 install scikit-learn
 RUN apt-get install -y python3-skimage
 RUN pip3 install nibabel
 RUN apt-get install -y python3-gdal
+RUN pip3 install xlwt # For pandas
+RUN apt-get install -y python3-h5py # For nibabel
 RUN pip3 freeze
 # Default command to run as part "docker run" if no command is given.
 CMD ["/bin/bash"]
@@ -1190,31 +1156,277 @@ Exit container:
 CTRL-D
 ```
 
+### Ubuntu 14.04.3 LTS virtual machine (local Python users)
+
+**Anaconda 4.1.1**
+
+Install Anaconda with Python 2.7.12 and packages:
+
+```
+wget http://repo.continuum.io/archive/Anaconda2-4.1.1-Linux-x86_64.sh
+bash Anaconda2-4.1.1-Linux-x86_64.sh
+```
+
+Create `use-anaconda2.sh` to set up environment (usually this goes into `.bashrc`, but I didnt't want its paths to interfere with Anaconda Python 3):
+
+```
+export PATH=/home/ubuntu/anaconda2/bin:$PATH
+```
+
+Install packages logged by recipy:
+
+```
+source use-anaconda2.sh
+
+pip install nibabel
+conda install gdal
+```
+
+Check package versions:
+
+```
+pip freeze
+```
+```
+beautifulsoup4==4.4.1
+GDAL==2.1.0
+lxml==3.6.0
+matplotlib==1.5.1
+nibabel==2.0.2
+numpy==1.11.1
+pandas==0.18.1
+Pillow==3.2.0
+scikit-image==0.12.3
+scikit-learn==0.17.1
+```
+
+Install Anaconda with Python 3.5.2 and packages:
+
+```
+wget http://repo.continuum.io/archive/Anaconda3-4.1.1-Linux-x86_64.sh
+bash Anaconda3-4.1.1-Linux-x86_64.sh
+```
+
+Create `use-anaconda3.sh` to set up environment:
+
+```
+export PATH=/home/ubuntu/anaconda3/bin:$PATH
+```
+
+Install packages logged by recipy:
+
+```
+source use-anaconda3.sh
+
+pip install nibabel
+conda install gdal
+```
+
+Check package versions:
+
+```
+pip freeze
+```
+```
+beautifulsoup4==4.4.1
+GDAL==2.1.0
+lxml==3.6.0
+matplotlib==1.5.1
+nibabel==2.0.2
+numpy==1.11.1
+pandas==0.18.1
+Pillow==3.2.0
+scikit-image==0.12.3
+scikit-learn==0.17.1
+```
+
+**pyenv 20160726**
+
+Install GDAL, as the package available via `apt-get libgdal-dev` can't be used with the latest Python `GDAL` package, so build from scratch:
+
+```
+wget http://download.osgeo.org/gdal/2.1.0/gdal-2.1.0.tar.gz
+tar xvf gdal-2.1.0.tar.gz
+cd gdal-2.1.0/
+./configure
+make # This takes about an hour!
+sudo make install
+# This is necessary so Python finds the correct library.
+export LD_PRELOAD=/usr/local/lib/libgdal.so.20.1.0 
+```
+
+Install pyenv:
+
+```
+sudo apt-get install -y git
+sudo apt-get install -y make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm
+curl -L https://raw.githubusercontent.com/yyuu/pyenv-installer/master/bin/pyenv-installer | bash
+```
+
+Create `use-pyenv.sh` to set up environment (usually this goes into `.bash_profile`) and add `LD_PRELOAD` for GDAL:
+
+```
+export LD_PRELOAD=/usr/local/lib/libgdal.so.20.1.0 
+export PATH="$HOME/.pyenv/bin:$PATH"
+eval "$(pyenv init -)"
+eval "$(pyenv virtualenv-init -)"
+```
+
+Install Python 2.7.6 and 3.4.0 within pyenv:
+
+```
+source use-pyenv.sh
+pyenv update
+pyenv install -l
+pyenv install 2.7.6
+pyenv install 3.4.0
+```
+
+Install Python 2 packages logged by recipy:
+
+```
+source use-pyenv.sh 
+pyenv local 2.7.6
+pip install numpy
+pip install scipy
+sudo apt-get install -y libfreetype6-dev
+pip install matplotlib
+sudo apt-get install -y libhdf5-dev
+pip install xlrd
+pip install tables
+pip install pandas
+pip install nose
+pip install pillow
+pip install scikit-learn
+pip install scikit-image
+pip install h5py
+pip install nibabel
+sudo apt-get install -y libxslt1-dev
+pip install lxml
+pip install beautifulsoup4
+easy_install GDAL
+```
+
+Check package versions:
+
+```
+pip freeze
+```
+```
+beautifulsoup4==4.5.1
+GDAL==2.1.0
+matplotlib==1.5.2
+nibabel==2.0.2
+numpy==1.11.1
+pandas==0.18.1
+Pillow==3.3.1
+scikit-image==0.12.3
+scikit-learn==0.17.1
+```
+
+Install Python 3 packages logged by recipy:
+
+```
+source use-pyenv.sh 
+pyenv local 3.4.0
+pip install numpy
+sudo apt-get install -y libblas-dev liblapack-dev gfortran
+pip install scipy
+pip install matplotlib
+pip install xlrd
+# Avoid error: ISO C90 forbids mixed declarations 
+# and code [-Werror=declaration-after-statement]
+# See http://stackoverflow.com/questions/25587039/error-compiling-rpy2-on-python3-4-due-to-werror-declaration-after-statement
+export CFLAGS="-Wno-error=declaration-after-statement"
+pip install tables
+pip install pandas
+pip install nose
+pip install pillow
+pip install scikit-learn
+pip install cython
+pip install scikit-image
+pip install h5py
+pip install nibabel
+pip install lxml
+pip install beautifulsoup4
+easy_install GDAL
+pip install xlwt
+```
+
+Check package versions:
+
+```
+pip freeze
+```
+```
+GDAL==2.1.0
+Pillow==3.3.1
+beautifulsoup4==4.5.1
+lxml==3.6.3
+matplotlib==1.5.2
+nibabel==2.0.2
+numpy==1.11.1
+pandas==0.18.1
+scikit-image==0.12.3
+scikit-learn==0.17.1
+```
+
+Installing the current Pillow gives an error under Python 3:
+
+```
+pip install pillow
+
+Tk/tkImaging.c:396:5: error: ISO C90 forbids mixed declarations and code [-Werror=declaration-after-statement]
+```
+
+which has been [noted by others](https://github.com/python-pillow/Pillow/issues/2017). So I installed the same version as for Python 2 (3.2.0) as suggested by others.
+
 ---
 
 ## Appendix - commands run for each deployment
 
-In what follows `python3` and `pip3` were used instead of `python` and `pip` on Ubuntu 14.04.3 LTS + 3.4.3.
+In what follows `python3` and `pip3` were used instead of `python` and `pip` on Ubuntu 14.04.3 LTS + 3.4.3 and Docker 1.12.0 + Ubuntu 14.04.4 LTS + 3.4.3 (via Dockerfiles).
 
-Commands run to check Python and pip versions:
+### Set up environment
 
 ```
-which python
-python --version
+# Windows 7 Enterprise SP1 + 3.5.2 (Anaconda 4.1.1)
+# Ubuntu 14.04.3 LTS + 2.7.6
+# Ubuntu 14.04.3 LTS + 3.4.3
+# Docker 1.12.0 + Ubuntu 14.04.4 LTS + 3.4.3
+# ...not applicable...
 
-which pip
-pip --version
+# Ubuntu 14.04.3 LTS + 3.4.3 + virtualenv 15.0.2
+mkdir recipy-venv
+cd recipy-venv
+virtualenv venv --python=/usr/bin/python3 --system-site-packages
+cd
+source recipy-venv/venv/bin/activate
+
+# Ubuntu 14.04.3 LTS + 3.4.3 + virtualenv 15.0.2 + virtualenvwrapper
+export WORKON_HOME=~/Envs
+mkdir -p $WORKON_HOME
+source /usr/local/bin/virtualenvwrapper.sh
+mkvirtualenv recipy-wrapper-env --python=/usr/bin/python3 --system-site-packages
+workon recipy-wrapper-env
+
+# Ubuntu 14.04.3 LTS + 3.5.2 (Anaconda 4.1.1)
+export PATH=/home/ubuntu/anaconda3/bin:$PATH
+
+# Ubuntu 14.04.3 LTS + 3.4.0 (pyenv 20160726)
+export PATH="$HOME/.pyenv/bin:$PATH"
+eval "$(pyenv init -)"
+eval "$(pyenv virtualenv-init -)"
 ```
 
-Commands run to install recipy 0.2.3:
+### Install recipy 0.2.3
 
 ```
 # Windows 7 Enterprise SP1 + 3.5.2 (Anaconda 4.1.1)
 # Ubuntu 14.04.3 LTS + 3.4.3 + virtualenv 15.0.2
 # Ubuntu 14.04.3 LTS + 3.4.3 + virtualenv 15.0.2 + virtualenvwrapper
-# Docker 1.12.0 + Ubuntu 14.04.4 LTS + 3.4.3 (via Dockerfile)
-# Ubuntu 14.04.3 LTS + 3.5.2 + Anaconda 4.1.1
-# Ubuntu 14.04.3 LTS + 3.4.0 + pyenv 20160726
+# Ubuntu 14.04.3 LTS + 3.5.2 (Anaconda 4.1.1)
+# Ubuntu 14.04.3 LTS + 3.4.0 (pyenv 20160726)
 pip install recipy
 
 # Ubuntu 14.04.3 LTS + 2.7.6
@@ -1223,36 +1435,8 @@ sudo pip install recipy
 # Ubuntu 14.04.3 LTS + 3.4.3
 sudo pip3 install recipy
 
-pip freeze | grep recipy
-which recipy
-recipy --version
-```
-
-Commands run to install recipy latest version:
-
-```
-git clone https://github.com/recipy/recipy
-cd recipy
-git log -1 --format="%ai %H"
-
-# Windows 7 Enterprise SP1 + 3.5.2 (Anaconda 4.1.1)
-# Ubuntu 14.04.3 LTS + 3.4.3 + virtualenv 15.0.2
-# Ubuntu 14.04.3 LTS + 3.4.3 + virtualenv 15.0.2 + virtualenvwrapper
-# Docker 1.12.0 + Ubuntu 14.04.4 LTS + 3.4.3 (via Dockerfile)
-# Ubuntu 14.04.3 LTS + 3.5.2 + Anaconda 4.1.1
-# Ubuntu 14.04.3 LTS + 3.4.0 + pyenv 20160726
-python setup.py install
-
-# Ubuntu 14.04.3 LTS + 2.7.6
-sudo python setup.py install
-
-# Ubuntu 14.04.3 LTS + 3.4.3
-sudo python3 setup.py install
-```
-
-[Dockerfile-recipy-2.3.0](./scripts/Dockerfile-recipy-2.3.0), which uses the Docker image mikej888/recipy:dependencies as a base image upon which to install recipy:
-
-```
+# Docker 1.12.0 + Ubuntu 14.04.4 LTS + 3.4.3
+cat > Dockerfile-recipy-2.3.0 << EOF
 FROM mikej888/recipy:dependencies
 RUN pip3 install recipy
 # Create group and user so image is not used as root.
@@ -1269,11 +1453,42 @@ RUN mkdir -p .config/matplotlib
 RUN echo "backend : Agg" >> .config/matplotlib/matplotlibrc
 # Default command to run as part "docker run" if no command is given.
 CMD ["/bin/bash"]
+EOF
+docker build -t mikej888/recipy:2.3.0 -f Dockerfile-recipy-2.3.0 .
+docker run -it -v $HOME/docker-shared:/home/ubuntu/shared -p 9000:9000 --rm mikej888/recipy:2.3.0 
 ```
 
-[Dockerfile-recipy-github](./scripts/Dockerfile-recipy-github), which uses the Docker image mikej888/recipy:dependencies as a base image upon which to install recipy:
+(see [Dockerfile-recipy-2.3.0](./docker/Dockerfile-recipy-2.3.0))
+
+### Install recipy latest version
 
 ```
+# Windows 7 Enterprise SP1 + 3.5.2 (Anaconda 4.1.1)
+# Ubuntu 14.04.3 LTS + 2.7.6
+# Ubuntu 14.04.3 LTS + 3.4.3
+# Ubuntu 14.04.3 LTS + 3.4.3 + virtualenv 15.0.2
+# Ubuntu 14.04.3 LTS + 3.4.3 + virtualenv 15.0.2 + virtualenvwrapper
+# Ubuntu 14.04.3 LTS + 3.5.2 (Anaconda 4.1.1)
+# Ubuntu 14.04.3 LTS + 3.4.0 (pyenv 20160726)
+git clone https://github.com/recipy/recipy
+cd recipy
+git log -1 --format="%ai %H"
+
+# Windows 7 Enterprise SP1 + 3.5.2 (Anaconda 4.1.1)
+# Ubuntu 14.04.3 LTS + 3.4.3 + virtualenv 15.0.2
+# Ubuntu 14.04.3 LTS + 3.4.3 + virtualenv 15.0.2 + virtualenvwrapper
+# Ubuntu 14.04.3 LTS + 3.5.2 (Anaconda 4.1.1)
+# Ubuntu 14.04.3 LTS + 3.4.0 (pyenv 20160726)
+python setup.py install
+
+# Ubuntu 14.04.3 LTS + 2.7.6
+sudo python setup.py install
+
+# Ubuntu 14.04.3 LTS + 3.4.3
+sudo python3 setup.py install
+
+# Docker 1.12.0 + Ubuntu 14.04.4 LTS + 3.4.3
+cat > Dockerfile-recipy-github << EOF
 FROM mikej888/recipy:dependencies
 RUN git clone https://github.com/recipy/recipy
 RUN cd recipy && git log -1 --format="%ai %H"
@@ -1299,21 +1514,23 @@ RUN mkdir -p .config/matplotlib
 RUN echo "backend : Agg" >> .config/matplotlib/matplotlibrc
 # Default command to run as part "docker run" if no command is given.
 CMD ["/bin/bash"]
-```
-
-Command to build Docker image:
-```
-docker build -t mikej888/recipy:2.3.0 -f Dockerfile-recipy-2.3.0 .
+EOF
 docker build -t mikej888/recipy:2.3.0 -f Dockerfile-recipy-github .
-```
-
-Command to run Docker container:
-```
-docker run -it -v $HOME/docker-shared:/home/ubuntu/shared -p 9000:9000 --rm mikej888/recipy:2.3.0 
 docker run -it -v $HOME/docker-shared:/home/ubuntu/shared -p 9000:9000 --rm mikej888/recipy:github 
 ```
 
-`recipy` commands run:
+(see [Dockerfile-recipy-github](./docker/Dockerfile-recipy-github))
+
+### Check Python and pip versions
+
+```
+which python
+python --version
+which pip
+pip --version
+```
+
+### Run `recipy`
 
 ```
 recipy --version
@@ -1345,7 +1562,7 @@ python check-recipy-open.py
 recipy gui
 ```
 
-`recipy` commands to see behaviour if `deployment` directory, in which scripts have been run, no longer exists:
+### See behaviour if `deployment` directory, in which scripts have been run, no longer exists
 
 ```
 cd ..
@@ -1355,7 +1572,7 @@ recipy search /home/ubuntu/deployment/file-import.csv # Ubuntu only
 mv tmp deployment
 ```
 
-`recipy` commands to see behaviour within Git repositories:
+### See behaviour within Git repositories
 
 ```
 git init
@@ -1384,7 +1601,7 @@ recipy latest
 cd
 ```
 
-`recipy gui` commands run:
+### Run `recipy gui`
 
 * Search for mjj, file-import.csv, C:\Users\mjj\deployment\file-import.csv (Windows), C:\\Users\\mjj\\deployment\\file-import.csv (Windows)
 * Search for ubuntu, file-import.csv, /home/ubuntu/deployment/file-import.csv (Ubuntu)
@@ -1395,7 +1612,7 @@ cd
 * Click Save as JSON
 * Look at JSON files.
 
-Commands run to find recipy files, before and after uninstall:
+### Find recipy files, before and after uninstall
 
 ```
 # Windows 7 Enterprise SP1 + 3.5.2 (Anaconda 4.1.1)
@@ -1405,27 +1622,30 @@ find Anaconda3/ -name "*recipy*"
 # Ubuntu 14.04.3 LTS + 3.4.3
 find /usr/local -name "*recipy*"
 
+# Docker 1.12.0 + Ubuntu 14.04.4 LTS + 3.4.3
+...not applicable...
+
 # Ubuntu 14.04.3 LTS + 3.4.3 + virtualenv 15.0.2
 find recipy-venv/ -name "*recipy*"
 
 # Ubuntu 14.04.3 LTS + 3.4.3 + virtualenv 15.0.2 + virtualenvwrapper
 find Envs/ -name "*recipy*"
 
-# Ubuntu 14.04.3 LTS + 3.5.2 + Anaconda 4.1.1
+# Ubuntu 14.04.3 LTS + 3.5.2 (Anaconda 4.1.1)
 find anaconda3/ -name "*recipy*"
 
-# Ubuntu 14.04.3 LTS + 3.4.0 + pyenv 20160726
+# Ubuntu 14.04.3 LTS + 3.4.0 (pyenv 20160726)
 find .pyenv -name "*recipy*"
 ```
 
-Commands run to uninstall recipy 0.2.3:
+### Uninstall recipy 0.2.3:
 
 ```
 # Windows 7 Enterprise SP1 + 3.5.2 (Anaconda 4.1.1)
 # Ubuntu 14.04.3 LTS + 3.4.3 + virtualenv 15.0.2
 # Ubuntu 14.04.3 LTS + 3.4.3 + virtualenv 15.0.2 + virtualenvwrapper
-# Ubuntu 14.04.3 LTS + 3.5.2 + Anaconda 4.1.1
-# Ubuntu 14.04.3 LTS + 3.4.0 + pyenv 20160726
+# Ubuntu 14.04.3 LTS + 3.5.2 (Anaconda 4.1.1)
+# Ubuntu 14.04.3 LTS + 3.4.0 (pyenv 20160726)
 pip uninstall recipy
 
 # Ubuntu 14.04.3 LTS + 2.7.6
@@ -1433,9 +1653,12 @@ sudo pip uninstall recipy
 
 # Ubuntu 14.04.3 LTS + 3.4.3
 sudo pip3 uninstall recipy
+
+# Docker 1.12.0 + Ubuntu 14.04.4 LTS + 3.4.3
+...not applicable...
 ```
 
-Commands run to uninstall recipy latest version:
+### Uninstall recipy latest version
 
 ```
 # Windows 7 Enterprise SP1 + 3.5.2 (Anaconda 4.1.1)
@@ -1459,6 +1682,9 @@ rm -f recipy-venv/venv/bin/recipy
 rm -rf Envs/recipy-wrapper-env/lib/python3.4/site-packages/recipy-0.2.3-py3.4.egg
 rm -f Envs/recipy-wrapper-env/bin/recipy
 
+# Docker 1.12.0 + Ubuntu 14.04.4 LTS + 3.4.3
+...not applicable...
+
 # Ubuntu 14.04.3 LTS + 3.5.2 + Anaconda 4.1.1
 rm -rf anaconda3/lib/python3.5/site-packages/recipy-0.2.3-py3.5.egg
 rm -f anaconda3/bin/recipy
@@ -1467,11 +1693,15 @@ rm -f anaconda3/bin/recipy
 rm -f .pyenv/shims/recipy
 rm -rf .pyenv/versions/3.4.0/lib/python3.4/site-packages/recipy-0.2.3-py3.4.egg
 rm -f .pyenv/versions/3.4.0/bin/recipy
+```
 
+### Check recipy has been uninstalled
+
+```
 pip freeze | grep recipy
 ```
 
-Commands run to clean up environment:
+### Clean up environment
 
 ```
 unset EDITOR

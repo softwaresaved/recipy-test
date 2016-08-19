@@ -6,7 +6,7 @@ RUN apt-get install -y git
 RUN apt-get install -y python3-numpy
 RUN apt-get install -y python3-scipy
 RUN apt-get install -y python3-matplotlib
-RUN apt-get install -y python3-pandas python3-nose
+RUN apt-get install -y python3-pandas
 RUN apt-get install -y python3-nose
 RUN apt-get install -y python3-pip
 RUN apt-get install -y python3-setuptools
@@ -15,6 +15,8 @@ RUN pip3 install scikit-learn
 RUN apt-get install -y python3-skimage
 RUN pip3 install nibabel
 RUN apt-get install -y python3-gdal
+RUN pip3 install xlwt # For pandas
+RUN apt-get install -y python3-h5py # For nibabel
 RUN pip3 freeze
 # Default command to run as part "docker run" if no command is given.
 CMD ["/bin/bash"]

@@ -5,6 +5,7 @@ Usage:
 """
 from __future__ import print_function
 import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import sys
 

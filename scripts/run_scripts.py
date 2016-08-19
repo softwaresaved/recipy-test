@@ -16,6 +16,7 @@ def run(python, script, package_function, files):
     print("Oops: " + " ".join(command_line) + \
           "returned " + str(return_code))
 
+OUTPUT = 'OUTPUT'
 os.mkdir("tmp/")
 with open('config.json') as config_file:
     config = json.load(config_file)
@@ -26,4 +27,7 @@ with open('config.json') as config_file:
       package_functions = config[package]
       for package_function in package_functions:
         files = package_functions[package_function]
+        files = [f.replace(OUTPUT, package_dir) for f in files]
         run("python", script, package_function, files), 
+        print("")
+

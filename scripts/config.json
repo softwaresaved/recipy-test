@@ -1,0 +1,85 @@
+{
+    "matplotlib.pyplot": {
+	"savefig": ["tmp/matplotlib.pyplot/plot.png"]
+	},
+    "bs4": {
+	"BeautifulSoup": ["data/bs4/index.html"]
+	},
+    "lxml.etree": {
+	"parse": ["data/lxml/data.xml"],
+	"iterparse": ["data/lxml/data.xml"]
+	},
+    "PIL": {
+	"Image.open": ["data/PIL/image.png"],
+	"Image.save": ["data/PIL/image.png", "tmp/PIL/rotated.png"]
+    },
+    "numpy": {
+	"loadtxt": ["data/numpy/data.csv"],
+	"fromfile": ["data/numpy/data.csv"],
+	"genfromtxt": ["data/numpy/data_incomplete.csv"],
+	"save": ["tmp/numpy/data.npy"],
+	"savez": ["tmp/numpy/data.npz"],
+	"savez_compressed": ["tmp/numpy/dataz.npz"],
+	"savetxt": ["tmp/numpy/data.txt"]
+	},
+    "sklearn": {
+	"dump_svmlight_file": ["tmp/sklearn/data.svmlight"],
+	"load_svmlight_file": ["data/sklearn/data.svmlight"]
+    },
+    "skimage": {
+	"io.imread": ["data/skimage/image.png"],
+	"io.imsave": ["data/skimage/image.png", "tmp/skimage/rotated.png"],
+	"external.tifffile.imread": ["data/skimage/image.tiff"],
+	"external.tifffile.imsave": ["data/skimage/image.tiff", "tmp/skimage/rotated.tiff"],
+	"io.load_sift": ["data/skimage/sift.key"],
+	"io_load_surf": ["data/skimage/image.surf"]
+	},
+    "pandas": {
+	"read_csv": ["data/pandas/dataframe.csv"],
+	"read_table": ["data/pandas/dataframe.csv"],
+	"read_excel": ["data/pandas/dataframe.xls"],
+	"read_hdf": ["data/pandas/dataframe.hdf"],
+	"read_pickle": ["data/pandas/dataframe.pickle"],
+	"read_stata": ["data/pandas/dataframe.dta"],
+	"read_msgpack": ["data/pandas/dataframe.mpack"],
+	"Panel.to_excel": ["tmp/pandas/panel.xls"],
+	"Panel.to_hdf": ["tmp/pandas/panel.hdf"],
+	"Panel.to_msgpack": ["tmp/pandas/panel.mpack"],
+	"Panel.to_pickle": ["tmp/pandas/panel.pickle"],
+	"DataFrame.to_csv": ["tmp/pandas/dataframe.csv"],
+	"DataFrame.to_excel": ["tmp/pandas/dataframe.xls"],
+	"DataFrame.to_hdf": ["tmp/pandas/dataframe.hdf"],
+	"DataFrame.to_msgpack": ["tmp/pandas/dataframe.mpack"],
+	"DataFrame.to_stata": ["tmp/pandas/dataframe.dta"],
+	"DataFrame.to_pickle": ["tmp/pandas/dataframe.pickle"],
+	"Series.to_csv": ["tmp/pandas/series.csv"],
+	"Series.to_hdf": ["tmp/pandas/series.hdf"],
+	"Series.to_msgpack": ["tmp/pandas/series.mpack"],
+	"Series.to_pickle": ["tmp/pandas/series.pickle"]
+	},
+    "nibabel": {
+	"nifti1.Nifti1Image.from_filename": ["data/nibabel/nifti1_image"],
+	"nifti1.Nifti1Image.to_filename": ["tmp/nibabel/nifti1_image"],
+	"nifti2.Nifti2Image.from_filename": ["data/nibabel/nifti2_image"],
+	"nifti2.Nifti2Image.to_filename": ["tmp/nibabel/nifti2_image"],
+	"freesurfer.mghformat.MGHImage.from_filename": ["data/nibabel/mgh_image"],
+	"freesurfer.mghformat.MGHImage.to_filename": ["tmp/nibabel/mgh_image"],
+	"spm99analyze.Spm99AnalyzeImage.from_filename": ["data/nibabel/spm99_image"],
+	"spm99analyze.Spm99AnalyzeImage.to_filename": ["tmp/nibabel/spm99_image"],
+	"minc1.Minc1Image.from_filename": ["data/nibabel/minc1_image"],
+	"minc1.Minc1Image.to_filename": ["tmp/nibabel/minc1_image"],
+	"minc2.Minc2Image.from_filename": ["data/nibabel/minc2_image"],
+	"minc2.Minc2Image.to_filename": ["tmp/nibabel/minc2_image"],
+	"analyze.AnalyzeImage.from_filename": ["data/nibabel/analyze_image"],
+	"analyze.AnalyzeImage.to_filename": ["tmp/nibabel/analyze_image"],
+	"parrec.PARRECImage.from_filename": ["data/nibabel/parrec_image.PAR"],
+	"parrec.PARRECImage.to_filename": ["data/nibabel/parrec_image.PAR", "tmp/nibabel/parrec_image"],
+	"spm2analyze.Spm2AnalyzeImage.from_filename": ["data/nibabel/spm2_image"],
+	"spm2analyze.Spm2AnalyzeImage.to_filename": ["tmp/nibabel/spm2_image"]
+    },
+    "gdal": {
+	"Open": ["data/gdal/image.tiff"],
+	"Driver.Create": ["tmp/gdal/image.tiff"],
+	"Driver.CreateCopy": ["data/gdal/image.tiff", "tmp/gdal/imagecopy.tiff"]
+    }
+}

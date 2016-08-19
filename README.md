@@ -13,8 +13,8 @@ provenance tracking package.
 
 ## Deliverables
 
-* Deployment report. Report on download and use of recipy under various  
-  operating systems and Python distributions.
+* [Deployment report](./Deployment.md). Report on download and use of 
+  recipy under various operating systems and Python distributions.
 * Test framework design. Design of test framework for recipy. 
 * Test framework. Implementation of test framework using Python,
   [py.test](http://doc.pytest.org/en/latest/) and parameterized tests. 

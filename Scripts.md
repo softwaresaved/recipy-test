@@ -1,0 +1,406 @@
+# recipy scripts
+
+Mike Jackson, The Software Sustainability Institute / EPCC, The University of Edinburgh
+
+## Overview
+
+A set of small scripts have been written to invoke every input and output function logged by the current release of recipy, in addition to `scikit-image` and `pillow` even though, as noted earlier, these are currently commented out. These were written so that I'd have code that can be evolved into automated tests.
+
+bs4
+
+* BeautifulSoup
+* None
+
+gdal
+
+* Open
+* Driver.Create, Driver.CreateCopy
+
+lxml.etree
+
+* parse, iterparse
+* None
+
+matplotlib.pyplot
+
+* None
+* savefig
+
+nibabel
+
+* nifti1.Nifti1Image.from_filename, nifti2.Nifti2Image.from_filename, freesurfer.mghformat.MGHImage.from_filename, spm99analyze.Spm99AnalyzeImage.from_filename, minc1.Minc1Image.from_filename, minc2.Minc2Image.from_filename, analyze.AnalyzeImage.from_filename, parrec.PARRECImage.from_filename, spm2analyze.Spm2AnalyzeImage.from_filename
+* nifti1.Nifti1Image.to_filename, nifti2.Nifti2Image.to_filename, freesurfer.mghformat.MGHImage.to_filename, spm99analyze.Spm99AnalyzeImage.to_filename, minc1.Minc1Image.to_filename, minc2.Minc2Image.to_filename, analyze.AnalyzeImage.to_filename, parrec.PARRECImage.to_filename, spm2analyze.Spm2AnalyzeImage.to_filename
+
+numpy
+
+* genfromtxt, loadtxt, fromfile
+* save, savez, savez_compressed, savetxt
+
+pandas
+
+* read_csv, read_table, read_excel, read_hdf, read_pickle, read_stata, read_msgpack
+* DataFrame.to_csv, DataFrame.to_excel, DataFrame.to_hdf, DataFrame.to_msgpack, DataFrame.to_stata, DataFrame.to_pickle, Panel.to_excel, Panel.to_hdf, Panel.to_msgpack, Panel.to_pickle, Series.to_csv, Series.to_hdf, Series.to_msgpack, Series.to_pickle
+
+PIL (currently commented out of recipy)
+
+* Image.open
+* Image.save
+
+skimage (currently commented out of recipy)
+
+* io.imread, io.load_sift, io.load_surf, external.tifffile.imread
+* io.imsave, external.tifffile.imsave
+
+sklearn
+
+* datasets.load_svmlight_file
+* datasets.dump_svmlight_file
+
+These scripts, and accompanying data files, can be seen in [scripts/](./scripts/).
+
+## Script failures
+
+Running the scripts under various environments shows issues that arise in terms of Python package versioning - both between Python versions and between versions installed via `pip` or `easy_install` and those provided via third-party packages e.g. within Ubuntu `python-` packages or Anaconda.
+
+The environments used were:
+
+* Windows 7 Enterprise SP1 + 3.5.2 (Anaconda 4.1.1)
+* Ubuntu 14.04.3 LTS + 3.4.3
+* Docker 1.12.0 and Ubuntu 14.04.4 LTS + 3.4.3
+* Ubuntu 14.04.3 LTS + 2.7.12 (Anaconda 4.1.1)
+* Ubuntu 14.04.3 LTS + 3.5.2 (Anaconda 4.1.1)
+* Ubuntu 14.04.3 LTS + 2.7.6 (pyenv 20160726)
+* Ubuntu 14.04.3 LTS + 3.4.0 (pyenv 20160726)
+
+### NiBabel `AttributeError`
+
+```
+$ python run_nibabel.py nifti2.Nifti2Image.from_filename data/nibabel/nifti2_image
+Traceback (most recent call last):
+  File "run_nibabel.py", line 174, in <module>
+    function(arguments)
+  File "run_nibabel.py", line 55, in invoke_nifti2_Nifti2Image_from_filename
+    data = nib.Nifti2Image.from_filename(file_name)
+AttributeError: 'module' object has no attribute 'Nifti2Image'
+
+$ python run_nibabel.py nifti2.Nifti2Image.to_filename tmp/nibabel/nifti2_image
+Traceback (most recent call last):
+  File "run_nibabel.py", line 174, in <module>
+    function(arguments)
+  File "run_nibabel.py", line 61, in invoke_nifti2_Nifti2Image_to_filename
+    img = nib.Nifti2Image(get_data(), get_affine())
+AttributeError: 'module' object has no attribute 'Nifti2Image'
+
+$ python run_nibabel.py minc1.Minc1Image.from_filename data/nibabel/minc1_image
+Traceback (most recent call last):
+  File "run_nibabel.py", line 174, in <module>
+    function(arguments)
+  File "run_nibabel.py", line 97, in invoke_minc1_Minc1Image_from_filename
+    data = nib.minc1.Minc1Image.from_filename(file_name)
+AttributeError: 'module' object has no attribute 'minc1'
+
+$ python run_nibabel.py minc1.Minc1Image.to_filename tmp/nibabel/minc1_image
+Traceback (most recent call last):
+  File "run_nibabel.py", line 174, in <module>
+    function(arguments)
+  File "run_nibabel.py", line 103, in invoke_minc1_Minc1Image_to_filename
+    img = nib.minc1.Minc1Image(get_data(), np.eye(4))
+AttributeError: 'module' object has no attribute 'minc1'
+
+$ python run_nibabel.py minc2.Minc2Image.from_filename data/nibabel/minc2_image
+Traceback (most recent call last):
+  File "run_nibabel.py", line 174, in <module>
+    function(arguments)
+  File "run_nibabel.py", line 111, in invoke_minc2_Minc2Image_from_filename
+    data = nib.minc2.Minc2Image.from_filename(file_name)
+AttributeError: 'module' object has no attribute 'minc2'
+
+$ python run_nibabel.py minc2.Minc2Image.to_filename tmp/nibabel/minc2_image
+Traceback (most recent call last):
+  File "run_nibabel.py", line 174, in <module>
+    function(arguments)
+  File "run_nibabel.py", line 117, in invoke_minc2_Minc2Image_to_filename
+    img = nib.minc2.Minc2Image(get_data(), np.eye(4))
+AttributeError: 'module' object has no attribute 'minc2'
+
+$ python run_nibabel.py parrec.PARRECImage.from_filename data/nibabel/parrec_image.PAR
+Traceback (most recent call last):
+  File "run_nibabel.py", line 174, in <module>
+    function(arguments)
+  File "run_nibabel.py", line 139, in invoke_parrec_PARRECImage_from_filename
+    data = nib.parrec.PARRECImage.from_filename(file_name)
+AttributeError: 'module' object has no attribute 'parrec'
+
+$ python run_nibabel.py parrec.PARRECImage.to_filename data/nibabel/parrec_image.PAR tmp/nibabel/parrec_image
+Traceback (most recent call last):
+  File "run_nibabel.py", line 174, in <module>
+    function(arguments)
+  File "run_nibabel.py", line 146, in invoke_parrec_PARRECImage_to_filename
+    img = nib.parrec.PARRECImage.from_filename(in_file_name)
+AttributeError: 'module' object has no attribute 'parrec'
+````
+
+Fails on:
+
+* Ubuntu 14.04.3 LTS + 2.7.6
+
+Cause: changes to package API. These use NiBabel 1.2.2. Others use 2.0.2.
+
+### NiBabel `NotImplementedError`
+
+```
+$ python run_nibabel.py minc1.Minc1Image.to_filename tmp/nibabel/minc1_image
+Traceback (most recent call last):
+  File "run_nibabel.py", line 174, in <module>
+    function(arguments)
+  File "run_nibabel.py", line 105, in invoke_minc1_Minc1Image_to_filename
+    img.to_filename(file_name)
+  File "C:\Users\mjj\Anaconda3\lib\site-packages\nibabel\spatialimages.py", line 781, in to_filename
+    self.to_file_map()
+  File "C:\Users\mjj\Anaconda3\lib\site-packages\nibabel\spatialimages.py", line 790, in to_file_map
+    raise NotImplementedError
+NotImplementedError
+
+$ python run_nibabel.py minc2.Minc2Image.to_filename tmp/nibabel/minc2_image
+Traceback (most recent call last):
+  File "run_nibabel.py", line 174, in <module>
+    function(arguments)
+  File "run_nibabel.py", line 119, in invoke_minc2_Minc2Image_to_filename
+    img.to_filename(file_name)
+  File "C:\Users\mjj\Anaconda3\lib\site-packages\nibabel\spatialimages.py", line 781, in to_filename
+    self.to_file_map()
+  File "C:\Users\mjj\Anaconda3\lib\site-packages\nibabel\spatialimages.py", line 790, in to_file_map
+    raise NotImplementedError
+NotImplementedError
+
+$ python run_nibabel.py parrec.PARRECImage.to_filename data/nibabel/parrec_image.PAR tmp/nibabel/parrec_image
+Traceback (most recent call last):
+  File "run_nibabel.py", line 174, in <module>
+    function(arguments)
+  File "run_nibabel.py", line 148, in invoke_parrec_PARRECImage_to_filename
+    img.to_filename(out_file_name)
+  File "C:\Users\mjj\Anaconda3\lib\site-packages\nibabel\spatialimages.py", line 781, in to_filename
+    self.to_file_map()
+  File "C:\Users\mjj\Anaconda3\lib\site-packages\nibabel\spatialimages.py", line 790, in to_file_map
+    raise NotImplementedError
+NotImplementedError
+```
+
+Fails on:
+
+* Windows 7 Enterprise SP1 + 3.5.2 (Anaconda 4.1.1)
+* Ubuntu 14.04.3 LTS + 3.4.3
+* Docker 1.12.0 and Ubuntu 14.04.4 LTS + 3.4.3
+* Ubuntu 14.04.3 LTS + 2.7.12 (Anaconda 4.1.1)
+* Ubuntu 14.04.3 LTS + 3.5.2 (Anaconda 4.1.1)
+* Ubuntu 14.04.3 LTS + 2.7.6 (pyenv 20160726)
+* Ubuntu 14.04.3 LTS + 3.4.0 (pyenv 20160726)
+
+Cause: NiBabel interface functions not implemented by sub-classes.
+
+### PIL `AttributeError`
+
+```
+$ python run_PIL.py Image.open data/PIL/image.png
+Traceback (most recent call last):
+  File "run_PIL.py", line 38, in <module>
+    function(arguments)
+  File "run_PIL.py", line 15, in invoke_Image_open
+    with Image.open(file_name) as f:
+  File "/usr/lib/python2.7/dist-packages/PIL/Image.py", line 528, in __getattr__
+    raise AttributeError(name)
+AttributeError: __exit__
+
+$ python run_PIL.py Image.save data/PIL/image.png tmp/PIL/rotated.png
+...as above...
+```
+
+Fails on:
+
+* Ubuntu 14.04.3 LTS + 2.7.6
+* Ubuntu 14.04.3 LTS + 3.4.3
+* Docker 1.12.0 and Ubuntu 14.04.4 LTS + 3.4.3
+
+Cause: changes to package API. These use Pillow 2.3.0. Others use 3.2.0+.
+
+### pandas `TypeError`
+
+```
+$ python run_pandas.py read_excel data/pandas/dataframe.xls
+Traceback (most recent call last):
+  File "run_pandas.py", line 235, in <module>
+    function(arguments)
+  File "run_pandas.py", line 57, in invoke_read_excel
+    data = pd.read_excel(file_name)
+TypeError: read_excel() takes exactly 2 arguments (1 given)
+
+$ python3 run_pandas.py read_excel data/pandas/dataframe.xls
+...as above but different message printed...
+TypeError: read_excel() missing 1 required positional argument: 'sheetname'
+
+$ python run_pandas.py read_hdf data/pandas/dataframe.hdf
+Traceback (most recent call last):
+  File "run_pandas.py", line 235, in <module>
+    function(arguments)
+  File "run_pandas.py", line 65, in invoke_read_hdf
+    data = pd.read_hdf(file_name)
+TypeError: read_hdf() takes exactly 2 arguments (1 given)
+
+$ python3 run_pandas.py read_hdf data/pandas/dataframe.hdf
+...as above but different message printed...
+TypeError: read_hdf() missing 1 required positional argument: 'key'
+```
+
+Fails on:
+
+* Ubuntu 14.04.3 LTS + 2.7.6
+* Ubuntu 14.04.3 LTS + 3.4.3
+* Docker 1.12.0 and Ubuntu 14.04.4 LTS + 3.4.3
+
+Cause: changes to package API. These use pandas 0.13.1. Others use 0.18.1.
+
+### pandas `ImportError`
+
+```
+$ python run_pandas.py read_pickle data/pandas/dataframe.pickle
+Traceback (most recent call last):
+  File "run_pandas.py", line 235, in <module>
+    function(arguments)
+  File "run_pandas.py", line 73, in invoke_read_pickle
+    data = pd.read_pickle(file_name)
+  File "/usr/lib/python2.7/dist-packages/pandas/io/pickle.py", line 49, in read_pickle
+    return try_read(path)
+  File "/usr/lib/python2.7/dist-packages/pandas/io/pickle.py", line 46, in try_read
+    return pc.load(fh, encoding=encoding, compat=True)
+  File "/usr/lib/python2.7/dist-packages/pandas/compat/pickle_compat.py", line 89, in load
+    return up.load()
+  File "/usr/lib/python2.7/pickle.py", line 858, in load
+    dispatch[key](self)
+  File "/usr/lib/python2.7/pickle.py", line 1090, in load_global
+    klass = self.find_class(module, name)
+  File "/usr/lib/python2.7/pickle.py", line 1124, in find_class
+    __import__(module)
+ImportError: No module named indexes.base
+
+$ python3 run_pandas.py read_pickle data/pandas/dataframe.pickle
+Traceback (most recent call last):
+  File "/usr/lib/python3/dist-packages/pandas/io/pickle.py", line 43, in try_read
+    return pc.load(fh, encoding=encoding, compat=False)
+  File "/usr/lib/python3/dist-packages/pandas/compat/pickle_compat.py", line 89, in load
+    return up.load()
+  File "/usr/lib/python3.4/pickle.py", line 1038, in load
+    dispatch[key[0]](self)
+  File "/usr/lib/python3.4/pickle.py", line 1325, in load_global
+    klass = self.find_class(module, name)
+  File "/usr/lib/python3.4/pickle.py", line 1375, in find_class
+    __import__(module, level=0)
+ImportError: No module named 'pandas.indexes'
+
+During handling of the above exception, another exception occurred:
+...
+```
+
+Fails on:
+
+* Ubuntu 14.04.3 LTS + 2.7.6
+* Ubuntu 14.04.3 LTS + 3.4.3
+* Docker 1.12.0 and Ubuntu 14.04.4 LTS + 3.4.3
+
+Cause: changes to package API. These use pandas 0.13.1. Others use 0.18.1.
+
+### pandas `ValueError`
+
+```
+$ python run_pandas.py read_msgpack data/pandas/dataframe.mpack
+Traceback (most recent call last):
+  File "run_pandas.py", line 235, in <module>
+    function(arguments)
+  File "run_pandas.py", line 89, in invoke_read_msgpack
+    data = pd.read_msgpack(file_name)
+  File "/usr/lib/python2.7/dist-packages/pandas/io/packers.py", line 156, in read_msgpack
+    return read(fh)
+  File "/usr/lib/python2.7/dist-packages/pandas/io/packers.py", line 141, in read
+    l = list(unpack(fh))
+  File "msgpack.pyx", line 662, in pandas.msgpack.Unpacker.__next__ (pandas/msgpack.cpp:8143)
+  File "msgpack.pyx", line 608, in pandas.msgpack.Unpacker._unpack (pandas/msgpack.cpp:7415)
+ValueError: Unpack failed: error = -1
+
+$ python3 run_pandas.py read_msgpack data/pandas/dataframe.mpack
+...as above...
+```
+
+Fails on:
+
+* Ubuntu 14.04.3 LTS + 2.7.6
+* Ubuntu 14.04.3 LTS + 3.4.3
+* Docker 1.12.0 and Ubuntu 14.04.4 LTS + 3.4.3
+
+Cause: changes to file format. These use pandas 0.13.1. Others use 0.18.1. These work if run using data files created by pandas 0.13.1 (in `data/pandas0.13.11).
+
+### skimage `NameError`
+
+```
+$ python run_skimage.py io.load_sift data/skimage/sift.key 
+Loading SIFT: data/skimage/sift.key
+Traceback (most recent call last):
+  File "run_skimage.py", line 80, in <module>
+    function(arguments)
+  File "run_skimage.py", line 29, in invoke_io_load_sift
+    data = io.load_sift(file_name)
+  File "C:\Users\mjj\Anaconda3\lib\site-packages\skimage\io\sift.py", line 62, i
+n load_sift
+    return _sift_read(f, mode='SIFT')
+  File "C:\Users\mjj\Anaconda3\lib\site-packages\skimage\io\sift.py", line 40, in _sift_read
+    f = file(f, 'r')
+NameError: name 'file' is not defined
+
+$ python run_skimage.py io_load_surf data/skimage/image.surf 
+Loading SURF: data/skimage/image.surf
+Traceback (most recent call last):
+  File "run_skimage.py", line 80, in <module>
+    function(arguments)
+  File "run_skimage.py", line 37, in invoke_io_load_surf
+    data = io.load_surf(file_name)
+  File "C:\Users\mjj\Anaconda3\lib\site-packages\skimage\io\sift.py", line 66, in load_surf
+    return _sift_read(f, mode='SURF')
+  File "C:\Users\mjj\Anaconda3\lib\site-packages\skimage\io\sift.py", line 40, in _sift_read
+    f = file(f, 'r')
+NameError: name 'file' is not defined
+```
+
+Fails on:
+
+* Windows 7 Enterprise SP1 + 3.5.2 (Anaconda 4.1.1)
+* Ubuntu 14.04.3 LTS + 3.4.3
+* Docker 1.12.0 and Ubuntu 14.04.4 LTS + 3.4.3
+* Ubuntu 14.04.3 LTS + 3.5.2 (Anaconda 4.1.1)
+* Ubuntu 14.04.3 LTS + 3.4.0 (pyenv 20160726)
+
+Cause: `file()` built-in removed in Python 3 (see [Builtins](https://docs.python.org/release/3.0/whatsnew/3.0.html#builtins)).
+
+### skimage `ImportError`
+
+All `run_skimage.py` examples fail with:
+
+```
+Traceback (most recent call last):
+  File "run_skimage.py", line 13, in <module>
+    from skimage import external
+ImportError: cannot import name 'external'
+```
+
+Commenting out:
+
+```
+from skimage import external
+```
+
+allows the non external.tifffile examples to run.
+
+Fails on:
+
+* Ubuntu 14.04.3 LTS + 2.7.6
+* Ubuntu 14.04.3 LTS + 3.4.3
+* Docker 1.12.0 and Ubuntu 14.04.4 LTS + 3.4.3
+
+Cause: changes to package API. These use skimage 0.9.3. Others use 0.12.3.

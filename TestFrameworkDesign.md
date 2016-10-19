@@ -2,7 +2,8 @@
 
 Mike Jackson, The Software Sustainability Institute / EPCC, The University of Edinburgh
 
-14/09/16
+* 19/10/16 Updated after Robin's review
+* 14/09/16
 
 ---
 
@@ -80,6 +81,12 @@ The test framework must run under Python 2.7+ and 3+, as recipy runs under both 
 
 recipy can be invoked either via inclusion of an 'import recipy' command at the start of a Python script or via '-m recipy' when a Python script is run via the command-line. With this in mind, this test framework does not directly invoke the functions that recipy has been configured to log. Rather, it runs Python scripts, via the operating system, that, in turn, invoke these functions. This mimics how recipy is used in practice.
 
+Robin comments that:
+
+> In general, I think people tend to use recipy far more through the `import recipy` route than the `python -m recipy` route. 
+
+so testing should focus on this route. This has been assumed in what follows.
+
 For each package that recipy can log, a script is written that exercises the functions of the package. Each script has the following API:
 
 ```
@@ -99,11 +106,11 @@ So long as the above interface and behaviour is respected, how the script implem
 Each unique combination of script, function, input and/or output files constitutes a unique test case. For example, test cases for numpy could include:
 
 ```
-python -m recipy run_numpy.py -f loadtxt -i data.csv
-python -m recipy run_numpy.py -f loadtxt -i data.gz
-python -m recipy run_numpy.py -f loadtxt -i data.bz2
-python -m recipy run_numpy.py -f savetxt -o result.csv
-python -m recipy run_numpy.py -f savetxt -o result.gz
+python run_numpy.py -f loadtxt -i data.csv
+python run_numpy.py -f loadtxt -i data.gz
+python run_numpy.py -f loadtxt -i data.bz2
+python run_numpy.py -f savetxt -o result.csv
+python run_numpy.py -f savetxt -o result.gz
 ```
 
 It is also useful to test scenarios including:
@@ -130,14 +137,22 @@ opaque("file.csv", data, delimiter=",")
 * Multiple invocations of functions from the same or multiple packages e.g. loading some data, filtering it, then saving it.
 * Different scripts for different versions of packages which may differ in terms of their input/output function names and arguments and input/output file formats.
 
-The script API allows for such tests as it places no restriction on the nature of either 'SCRIPT.py' or 'FUNCTION', so, for example, one can have:
+The script API allows for such tests as it places no restriction on the nature of either 'SCRIPT.py' or 'FUNCTION'. In particular, there is no 1-1 mapping between 'function' and functions that are logged by recipy. A single 'function' can result in a number of functions being logged by numpy (e.g. both 'loadtxt' and 'savetxt' for the 'load_and_savetxt' example). So, for example, one can have:
 
 ```
-python -m recipy run_numpy_as_opaque.py -f loadtxt -i data.csv
-python -m recipy run_numpy.py -f load_and_savetxt -i data.csv -o result.csv
-python -m recipy run_numpy_matplotlib.py -f loadtxt -i data.csv -o plot.png
-python -m recipy run_numpy1.11.1.py -f loadtxt -i data.csv -o plot.png
+python run_numpy_as_opaque.py -f loadtxt -i data.csv
+python run_numpy.py -f load_and_savetxt -i data.csv -o result.csv
+python run_numpy_matplotlib.py -f loadtxt -i data.csv -o plot.png
+python run_numpy1.11.1.py -f loadtxt -i data.csv -o plot.png
 ```
+
+There could be a 1-1 mapping between 'function' and Python functions in the test scripts e.g. 'load_and_savetxt' could be a function which invokes both 'loadtxt' and 'savetxt' in a 'run_numpy.py' test script.
+
+**Implementation**
+
+The test scripts can be quite simple, with a super-class provided to support commonality across them, particularly in respect of handling command-line arguments.
+
+Conditionals can handle the mapping between 'function' names and functions. Imposing a 1-1 mapping between 'function' names and functions in the test scripts would allow reflection to be used to invoke 'function' within the script, which, again, the super-class could handle.
 
 ### 3.2 Test cases specification
 
@@ -151,38 +166,18 @@ The test cases specification is:
 
 ```
 ---
-tests:
-  SCRIPT_1:       # Test cases for a specific script
-    libraries:    # recipy-logged libraries used by the script
-    - LIBRARY_i
-    - LIBRARY_ii
-    - ...
-    functions:
-      FUNCTION_A:   # Test cases for a specific test function
-      - input:      # Test case 1 - reads input files
-        - INPUT 
-        - ...
-      - input:      # Test case 2  reads input files
-        - INPUT 
-        - ...
-      FUNCTION_B:   # Test cases for a specific test function
-      - output:     # Test case 3 - writes output files
-        - OUTPUT 
-        - ...
-      - output:     # Test case 4 - writes output files
-        - OUTPUT 
-        - ...
-      FUNCTION_B:   # Test cases for a specific test function
-      - input:      # Test case 5 - reads input and writes output files
-        - INPUT 
-        - ...
-        output:
-        - OUTPUT 
-        - ...
-      FUNCTION_B:
-      - ...
-  SCRIPT_2:
-    ...
+SCRIPT:                               # Test cases for a script
+- libraries: [LIBRARY, LIBRARY, ... ] # recipy-logged libraries used by the script
+  arguments: [..., ..., ...]          # Script argument
+  inputs: [INPUT, INPUT, ...]         # Expected logged input files
+  outputs: [OUTPUT, OUTPUT, ...]      # Expected logged output files
+- libraries: [LIBRARY, LIBRARY, ... ]
+  arguments: [..., ..., ...]
+  inputs: [INPUT, INPUT, ...]
+  outputs: [OUTPUT, OUTPUT, ...]
+- ...
+SCRIPT:                               # Test cases for another script
+...
 ```
 
 'libraries' may contain either generic names e.g. 'numpy' (compatible with any version of numpy) or version qualified names e.g. 'numpy v1.11.1' (compatible wity numpy v1.11.1+).
@@ -191,85 +186,87 @@ For example:
 
 ```
 ---
-tests:
-  run_numpy:
-    libraries:
-    - numpy
-    functions:
-      loadtxt:
-      - input: 
-        - sample_input.csv
-      - input: 
-        - sample_input.gz
-      - input: 
-        - sample_input.bz2
-      savetxt:
-      - output: 
-        - sample_output.csv
-      - output: 
-        - sample_output.gz
-      load_and_savetxt:
-      - input:
-        - data.csv
-        output:
-        - result.csv
-```
+test_numpy.py:
+- libraries: [numpy]
+  arguments: [-f, loadtxt, -i, input.csv]
+  inputs: [input.csv]
+- libraries: [numpy]
+  arguments: [-f, savetxt, -o, output.csv]
+  outputs: [output.csv]
+- libraries: [numpy]
+  arguments: [-f, load_and_save_txt, -i, input.csv, -o, output.csv]
+  inputs: [input.csv]
+  outputs: [output.csv]
+```  
 
 YAML does not preclude the use of other notations e.g. [JSON](http://www.json.org/). JSON can be considered a subset of YAML (see [YAML version 1.2](http://yaml.org/spec/1.2/spec.html)). For example, the JSON corresponding to the YAML above is:
 
 ```
 {
-  "tests": {
-    "run_numpy": {
+  "test_numpy.py": [
+    {
       "libraries": [ "numpy" ],
-      "functions": {
-        "loadtxt": [
-          { "input": [ "sample_input.csv" ] },
-          { "input": [ "sample_input.gz" ] },
-          { "input": [ "sample_input.bz2" ] }
-        ],
-        "savetxt": [
-          { "output": [ "sample_output.csv" ] },
-          { "output": [ "sample_output.gz" ] }
-        ],
-        "load_and_savetxt": [
-          {
-            "input": [ "data.csv" ],
-            "output": [ "result.csv" ]
-          }
-        ]
-      }
+      "arguments": [ "-f", "loadtxt", "-i", "input.csv" ],
+      "inputs": [ "input.csv" ]
+    },
+    {
+      "libraries": [ "numpy" ],
+      "arguments": [ "-f", "savetxt", "-o", "output.csv" ],
+      "outputs": [ "output.csv" ]
+    },
+    {
+      "libraries": [ "numpy" ],
+      "arguments": [ "-f", "load_and_savetxt", "-i", "input.csv", 
+                     "-o", "output.csv" ],
+      "inputs": [ "input.csv" ],
+      "outputs": [ "output.csv" ]
     }
-  }
+  ]
 }
 ```
 
-**Questions**
+The configuration makes assumptions are made as to a script's command-line parameters. Instead, the configuration specifies explicitly the script command-line parameters, and the inputs, outputs and functions expected to be invoked (and which are searched for in the recipy logs by the test framework). So, for example, for an individual test case of a test script:
 
-I run hot and cold on YAML indentation, especially the subtle difference between lists and dictionaries which isn't always clear when it's deeply indented. Just use JSON as a file format?
+
+```
+test_numpy.py:
+- libraries: [numpy]
+  arguments: [-f, loadtxt, -i, input.csv]
+  inputs: [input.csv]
+```
+
+And, for an individual test case of a 'real world' script which reads some data and outputs a plot:
+
+```
+plot_analysis.py:
+- libraries [numpy, matplotlib.pyplot]
+  arguments: [--title=Results, --d=population.csv, --format==jpg]
+  inputs: [population.csv]
+  outputs: [population.jpg]
+```
 
 ### 3.3 Running a single test case
 
 A 'test_case' module provides the following function to run a single test case.
 
 ```
-def run_test_case(test_cases_directory, test_case, libraries)
+def run_test_case(test_cases_directory, script, test_case)
 ```
 
 Run a single test case, where:
 
 * 'test_cases_directory': directory containing test cases.
+* 'script': a script e.g. 'run_numpy.py'.
 * 'test_case': test case consisting of:
-  - 'script': a script e.g. 'run_numpy.py'.
-  - 'function': a function e.g. 'loadtxt', 'load_and_savetxt'.
+  - 'libraries': a list of one or more libraries e.g. ['numpy'].
+  - 'arguments': script arguments e.g. '-f loadtxt -i input.csv', '-f load_and_savetxt -i data.csv -o result.csv'.
   - 'inputs': a list of zero or more input files e.g. ['data.csv'].
   - 'outputs': a list of zero or more output files e.g. ['result.csv'].
-* 'libraries': a list of one or more libraries e.g. ['numpy'].
 
 It operates as follows:
 
-* If any path to a script, input, or output, is relative and 'test_cases_directory' is defined then the paths are prefxed by 'test_cases_directory'.
-* The test case script is run via 'python -m recipy script -f function -i inputs -o outputs'.
+* If the path 'script' is relative and 'test_cases_directory' is defined then the paths are prefxed by 'test_cases_directory'.
+* The test case script is run via 'python script arguments'.
 * The ID and the log for the most recent run are retrieved from the database.
 * The log is checked to ensure that information about the run has been recorded correctly.
 
@@ -310,7 +307,7 @@ The following checks are done:
 * 'unique_id' matches that returned from the database.
 * Files listed in 'script', 'inputs', 'outputs', 'libraries' match those in 'test_case'.
 * 'libraries' also includes 'recipy'.
-* 'command_args' matches '-f ... -i ... -o ...', the arguments passed to the script by the 'shell' module (section 5.1).
+* 'command_args' matches 'arguments'.
 * 'date' and 'exit_date' are valid dates, record the current year, month and day and 'date' <= 'exit_date'.
 * 'author' holds the current user.
 * 'description' is empty.
@@ -318,7 +315,7 @@ The following checks are done:
 * 'command' holds the current Python interpreter.
 * 'environment' holds the operating system and version of the current Python interpreter.
 
-'gitrepo', 'gitorigin', 'gitcommit' and 'diff' are the remit of Git and diff-related tests described in section 4.3 below.
+'gitrepo', 'gitorigin', 'gitcommit' and 'diff' are the remit of Git and diff-related tests described in section 4.4 below.
 
 The recipy database is *not* cleared between test runs as this allows the check to be done that running a script adds a new log entry yet does not remove any existing ones.
 
@@ -329,18 +326,10 @@ How the test case runner accesses the database, via the 'database' module (Secti
 Providing an xUnit test-framework compliant test function for each test case is unscalable due to the number of possible tests. It also results in a lot of duplicated code. Ideally, we want to run the following algorithm:
 
 ```
-FOR EACH script_name IN test_cases_specification:
-  script = test_cases_specification[script_name]
-  libraries = script["libraries"] or [] if none
-  functions = script["functions"]
-  FOR EACH function_name IN functions:
-    FOR EACH input_output IN functions[function_name]:
-      test_case = {}
-      test_case["script"] = script_name
-      test_case["function"] = function_name
-      test_case["inputs"] = input_output["inputs"] or [] if none
-      test_case["outputs"] = input_output["outputs"] or [] if none
-      run_test_case(test_cases_directory, test_case, libraries)
+FOR EACH script IN test_cases_specification:
+  test_cases = test_cases_specification[script]
+  FOR EACH test_case IN test_cases:
+    run_test_case(test_cases_directory, script, test_case)
 ```
 
 The algorithm should also filter test cases such that a test case is only generated if all its libraries are available within the current Python environment. For example, if libraries includes 'numpy' then numpy should be available, if it includes 'numpy v1.11.1' then this version, or later, should be available (see the 'environment' module, section 5.4).
@@ -600,6 +589,12 @@ pytest/test_parameterize_bootstrap.py:17: Failed
 ====================== 1 failed, 4 passed in 0.03 seconds ======================
 ```
 
+**Testing across multiple versions of packages**
+
+This framework does not support testing across multiple versions of packages, such as numpy or matplotlib. The test framework is designed to run tests within a single execution environment: a Python interpreter and a set of installed libraries. Via the parameterized tests, tests applicable to versions of libraries that are not available can either not be generated (in which case this should be logged) or could be generated and just "skipped" (so that they show up as valid tests, albeit those that haven't run).
+
+I don't think testing across multiple execution environments should be the responsibility of this test framework, but either should be done manually, or via another test framework (which sets up the execution environment, then runs this test framework).
+
 ### 3.5 Configuring the test framework
 
 The test framework expects the following configuration:
@@ -648,14 +643,19 @@ The following tests are each implemented as one or more xUnit test framework-com
 
 A tests for scripts using 'import recipy':
 
-* 'python -m recipy script.py ...' is run.
+* 'python script.py ...' is run, where script.py is known to invoke certain input and output functions logged by recipy.
 * The database is queried for the most recent log entry.
-* 'import recipy' is added to the start of the script.
-* 'python script.py ...' is run.
-* The database is queried for the most recent log entry.
-* The log entries are compared for equality. All their entries should be equal except those for 'unique_id', 'date', and 'exit_date'.
+* The log entries are checked to see that they hold expected information about script.py.
 
-### 4.2 Command-line parameters tests
+### 4.2 'python -m recipy' test
+
+A tests for scripts using '-m recipy':
+
+* 'python -m recipy script.py ...' is run, where script.py is known to invoke certain input and output functions logged by recipy.
+* The database is queried for the most recent log entry.
+* The log entries are checked to see that they hold expected information about script.py.
+
+### 4.3 Command-line parameters tests
 
 Tests for recipy's command-line parameters include the following:
 
@@ -682,7 +682,7 @@ Outputs:
 
 * 'recipy latest -j' prints a JSON document matching that corresponding to the latest log in the database.
 * 'recipy latest --diff' prints the same as 'recipy latest'.
-  - Git and diff-related tests are described in section 4.3 below.
+  - Git and diff-related tests are described in section 4.4 below.
 * 'recipy search -i HASH' prints text matching the template above.
 * 'recipy search -i HASH_SUBSTRING', as above.
 * 'recipy search -i HASH -j' prints a JSON document matching that corresponding to the log for HASH in the database.
@@ -719,11 +719,11 @@ It is not clear what this recipy flag does:
 -v --verbose  Be verbose
 ```
 
-**Questions**
+Robin comments that:
 
-Is this too much? Is there a need to perform pattern matching on the output? Would parsing the JSON equivalents be sufficient?
+> Parsing JSON outputs from the `recipy search` and `recipy latest` commands would be fine, with couple of tests to check that the non-JSON output makes sense (and matches the JSON output for a specific situation).
 
-### 4.3 'recipy --diff' and Git tests
+### 4.4 'recipy --diff' and Git tests
 
 Tests for 'recipy --diff' and Git require that the Python script that is logged by recipy has been commited to a Git repository.
 
@@ -748,7 +748,11 @@ To test this command if the script is changed:
 
 * The database is queried for the most recent log entry, and the 'diff' section is checked for equality with "\n+print(\"Hello\")\n".
 
-### 4.4 'recipyrc' tests
+Either tests could be run within a Git repository by default (e.g. the Git repository hosting the test framework), or a temporary Git repository could be created with the scripts and the tests run there.
+
+Similarly, tests for recipy's behaviour outwith a Git repository can be handled via the use of a temporary directory created by the test framework.
+
+### 4.5 'recipyrc' tests
 
 Tests of recipy configuration, provided via 'recipyrc' configuration files, include the following. For each, 'recipyrc' configuration files are created on a test-by-test basis.
 
@@ -833,9 +837,9 @@ recipy run complete
 * If this includes a package used by the script (e.g. numpy) then the most recent log entry has no members in its 'output' entry for the files loaded using the functions of that package.
 * If this is 'all' then the most recent log entry has 'input' entry equal to [].
 
-**Questions**
+Robin comments that: 
 
-Again, is this too much?
+> I've already found a number of subtle bugs that occur only with specific configuration file settings, so these need to be fairly well tested.
 
 ---
 

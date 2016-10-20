@@ -90,27 +90,18 @@ so testing should focus on this route. This has been assumed in what follows.
 For each package that recipy can log, a script is written that exercises the functions of the package. Each script has the following API:
 
 ```
-python SCRIPT.py -f FUNCTION [-i [INPUT1[,INPUT]*]  [-o [OUTPUT1[,OUTPUT]*] 
+python SCRIPT.py FUNCTION
 ```
 
-The 'FUNCTION' argument specifies the function of the package to execute, which corresponds to one of the package's functions which recipy can log.
+The 'FUNCTION' argument specifies a unique function in the script. This function invokes input and/or output functions using one or more functions which recipy can log.
 
-A list of comma-separated input file names is given. The script is expected to use these input file names for functions that read files.
+Input and output files are the responsibility of the script itself. It can either create its own input and output files, or read these in from somewhere (but it is not expected that the caller (i.e. the test framework) provide these.
 
-A list of comma-separated output file names is given. The script is expected to use these output file names for functions that write files.
-
-The script creates input files of the given name that are suitable for testing the named function, invokes the function, and ensures that the output files are placed in the given output file names.
-
-So long as the above interface and behaviour is respected, how the script implements this behaviour is undefined. For example, it might use existing input files, or create these on-the-fly.
-
-Each unique combination of script, function, input and/or output files constitutes a unique test case. For example, test cases for numpy could include:
+Each function constitutes a unique test case. For example, test cases for numpy could include:
 
 ```
-python run_numpy.py -f loadtxt -i data.csv
-python run_numpy.py -f loadtxt -i data.gz
-python run_numpy.py -f loadtxt -i data.bz2
-python run_numpy.py -f savetxt -o result.csv
-python run_numpy.py -f savetxt -o result.gz
+python run_numpy.py loadtxt
+python run_numpy.py savetxt
 ```
 
 It is also useful to test scenarios including:
@@ -140,19 +131,22 @@ opaque("file.csv", data, delimiter=",")
 The script API allows for such tests as it places no restriction on the nature of either 'SCRIPT.py' or 'FUNCTION'. In particular, there is no 1-1 mapping between 'function' and functions that are logged by recipy. A single 'function' can result in a number of functions being logged by numpy (e.g. both 'loadtxt' and 'savetxt' for the 'load_and_savetxt' example). So, for example, one can have:
 
 ```
-python run_numpy_as_opaque.py -f loadtxt -i data.csv
-python run_numpy.py -f load_and_savetxt -i data.csv -o result.csv
-python run_numpy_matplotlib.py -f loadtxt -i data.csv -o plot.png
-python run_numpy1.11.1.py -f loadtxt -i data.csv -o plot.png
+python run_numpy.py loadtxt_gz
+python run_numpy.py loadtxt_bz2
+python run_numpy.py savetxt_gz
+python run_numpy_as_opaque.py loadtxt
+python run_numpy.py load_and_savetxt
+python run_numpy_matplotlib.py loadtxt_plot
+python run_numpy1.11.1.py -f loadtxt_plot
 ```
 
-There could be a 1-1 mapping between 'function' and Python functions in the test scripts e.g. 'load_and_savetxt' could be a function which invokes both 'loadtxt' and 'savetxt' in a 'run_numpy.py' test script.
+As a reminder, there is a 1-1 mapping between 'function' and Python functions in the test scripts e.g. 'load_and_savetxt' could be a function which invokes both 'loadtxt' and 'savetxt' in a 'run_numpy.py' test script.
 
 **Implementation**
 
 The test scripts can be quite simple, with a super-class provided to support commonality across them, particularly in respect of handling command-line arguments.
 
-Conditionals can handle the mapping between 'function' names and functions. Imposing a 1-1 mapping between 'function' names and functions in the test scripts would allow reflection to be used to invoke 'function' within the script, which, again, the super-class could handle.
+Conditionals or reflection can handle the mapping between 'function' names and functions, which, again, the super-class can handle.
 
 ### 3.2 Test cases specification
 
@@ -188,16 +182,18 @@ For example:
 ---
 test_numpy.py:
 - libraries: [numpy]
-  arguments: [-f, loadtxt, -i, input.csv]
+  arguments: [loadtxt]
   inputs: [input.csv]
 - libraries: [numpy]
-  arguments: [-f, savetxt, -o, output.csv]
+  arguments: [savetxt]
   outputs: [output.csv]
 - libraries: [numpy]
-  arguments: [-f, load_and_save_txt, -i, input.csv, -o, output.csv]
+  arguments: [load_and_save_txt]
   inputs: [input.csv]
   outputs: [output.csv]
-```  
+```
+
+It is up to the developer to ensure the 'input' and 'output' file names record the input and output files used by the associated script.
 
 YAML does not preclude the use of other notations e.g. [JSON](http://www.json.org/). JSON can be considered a subset of YAML (see [YAML version 1.2](http://yaml.org/spec/1.2/spec.html)). For example, the JSON corresponding to the YAML above is:
 
@@ -206,18 +202,17 @@ YAML does not preclude the use of other notations e.g. [JSON](http://www.json.or
   "test_numpy.py": [
     {
       "libraries": [ "numpy" ],
-      "arguments": [ "-f", "loadtxt", "-i", "input.csv" ],
+      "arguments": [ "loadtxt" ],
       "inputs": [ "input.csv" ]
     },
     {
       "libraries": [ "numpy" ],
-      "arguments": [ "-f", "savetxt", "-o", "output.csv" ],
+      "arguments": [ "savetxt" ],
       "outputs": [ "output.csv" ]
     },
     {
       "libraries": [ "numpy" ],
-      "arguments": [ "-f", "load_and_savetxt", "-i", "input.csv", 
-                     "-o", "output.csv" ],
+      "arguments": [ "load_and_savetxt" ],
       "inputs": [ "input.csv" ],
       "outputs": [ "output.csv" ]
     }
@@ -225,17 +220,17 @@ YAML does not preclude the use of other notations e.g. [JSON](http://www.json.or
 }
 ```
 
-The configuration makes assumptions are made as to a script's command-line parameters. Instead, the configuration specifies explicitly the script command-line parameters, and the inputs, outputs and functions expected to be invoked (and which are searched for in the recipy logs by the test framework). So, for example, for an individual test case of a test script:
+The configuration makes no as to a script's command-line parameters. Instead, the configuration specifies explicitly the script command-line parameters, and the inputs, outputs and functions expected to be invoked (and which are searched for in the recipy logs by the test framework). So, for example, for an individual test case of a test script:
 
 
 ```
 test_numpy.py:
 - libraries: [numpy]
-  arguments: [-f, loadtxt, -i, input.csv]
+  arguments: [loadtxt]
   inputs: [input.csv]
 ```
 
-And, for an individual test case of a 'real world' script which reads some data and outputs a plot:
+The design is such that test cases can also be provided for 'real world' scripts which take in command-line arguments. For example:
 
 ```
 plot_analysis.py:
@@ -259,7 +254,7 @@ Run a single test case, where:
 * 'script': a script e.g. 'run_numpy.py'.
 * 'test_case': test case consisting of:
   - 'libraries': a list of one or more libraries e.g. ['numpy'].
-  - 'arguments': script arguments e.g. '-f loadtxt -i input.csv', '-f load_and_savetxt -i data.csv -o result.csv'.
+  - 'arguments': script arguments e.g. 'loadtxt', 'load_and_savetxt'.
   - 'inputs': a list of zero or more input files e.g. ['data.csv'].
   - 'outputs': a list of zero or more output files e.g. ['result.csv'].
 

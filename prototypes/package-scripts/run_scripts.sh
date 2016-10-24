@@ -4,9 +4,6 @@ MODULE=""
 mkdir -p tmp
 rm -rf tmp/*
 
-mkdir -p tmp/matplotlib
-python $MODULE run_matplotlib.pyplot.py savefig tmp/matplotlib/plot.png
-
 mkdir -p tmp/bs4
 python $MODULE run_bs4.py BeautifulSoup data/bs4/index.html
 
@@ -17,15 +14,6 @@ python $MODULE run_lxml.etree.py iterparse data/lxml/data.xml
 mkdir -p tmp/PIL
 python $MODULE run_PIL.py Image.open data/PIL/image.png
 python $MODULE run_PIL.py Image.save data/PIL/image.png tmp/PIL/rotated.png
-
-mkdir -p tmp/numpy
-python $MODULE run_numpy.py loadtxt data/numpy/data.csv
-python $MODULE run_numpy.py fromfile data/numpy/data.csv
-python $MODULE run_numpy.py genfromtxt data/numpy/data_incomplete.csv
-python $MODULE run_numpy.py save tmp/numpy/data.npy
-python $MODULE run_numpy.py savez tmp/numpy/data.npz
-python $MODULE run_numpy.py savez_compressed tmp/numpy/dataz.npz
-python $MODULE run_numpy.py savetxt tmp/numpy/data.txt
 
 mkdir -p tmp/sklearn
 python $MODULE run_sklearn.py dump_svmlight_file tmp/sklearn/data.svmlight

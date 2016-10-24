@@ -1,7 +1,4 @@
 {
-    "matplotlib.pyplot": {
-	"savefig": ["OUTPUT/plot.png"]
-	},
     "bs4": {
 	"BeautifulSoup": ["data/bs4/index.html"]
 	},
@@ -13,15 +10,6 @@
 	"Image.open": ["data/PIL/image.png"],
 	"Image.save": ["data/PIL/image.png", "OUTPUT/rotated.png"]
     },
-    "numpy": {
-	"loadtxt": ["data/numpy/data.csv"],
-	"fromfile": ["data/numpy/data.csv"],
-	"genfromtxt": ["data/numpy/data_incomplete.csv"],
-	"save": ["OUTPUT/data.npy"],
-	"savez": ["OUTPUT/data.npz"],
-	"savez_compressed": ["OUTPUT/dataz.npz"],
-	"savetxt": ["OUTPUT/data.txt"]
-	},
     "sklearn": {
 	"dump_svmlight_file": ["OUTPUT/data.svmlight"],
 	"load_svmlight_file": ["data/sklearn/data.svmlight"]

@@ -21,13 +21,6 @@ skimage (currently commented out of recipy)
 * io.imread, io.load_sift, io.load_surf, external.tifffile.imread
 * io.imsave, external.tifffile.imsave
 
-sklearn
-
-* datasets.load_svmlight_file
-* datasets.dump_svmlight_file
-
-These scripts, and accompanying data files, can be seen in [scripts/](./scripts/).
-
 ## Script failures
 
 Running the scripts under various environments shows issues that arise in terms of Python package versioning - both between Python versions and between versions installed via `pip` or `easy_install` and those provided via third-party packages e.g. within Ubuntu `python-` packages or Anaconda.

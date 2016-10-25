@@ -1,8 +1,4 @@
 {
-    "sklearn": {
-	"dump_svmlight_file": ["OUTPUT/data.svmlight"],
-	"load_svmlight_file": ["data/sklearn/data.svmlight"]
-    },
     "skimage": {
 	"io.imread": ["data/skimage/image.png"],
 	"io.imsave": ["data/skimage/image.png", "OUTPUT/rotated.png"],

@@ -4,10 +4,6 @@ MODULE=""
 mkdir -p tmp
 rm -rf tmp/*
 
-mkdir -p tmp/sklearn
-python $MODULE run_sklearn.py dump_svmlight_file tmp/sklearn/data.svmlight
-python $MODULE run_sklearn.py load_svmlight_file data/sklearn/data.svmlight
-
 mkdir -p tmp/skimage
 python $MODULE run_skimage.py io.imread data/skimage/image.png 
 python $MODULE run_skimage.py io.imsave data/skimage/image.png tmp/skimage/rotated.png

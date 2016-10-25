@@ -26,11 +26,6 @@ nibabel
 * nifti1.Nifti1Image.from_filename, nifti2.Nifti2Image.from_filename, freesurfer.mghformat.MGHImage.from_filename, spm99analyze.Spm99AnalyzeImage.from_filename, minc1.Minc1Image.from_filename, minc2.Minc2Image.from_filename, analyze.AnalyzeImage.from_filename, parrec.PARRECImage.from_filename, spm2analyze.Spm2AnalyzeImage.from_filename
 * nifti1.Nifti1Image.to_filename, nifti2.Nifti2Image.to_filename, freesurfer.mghformat.MGHImage.to_filename, spm99analyze.Spm99AnalyzeImage.to_filename, minc1.Minc1Image.to_filename, minc2.Minc2Image.to_filename, analyze.AnalyzeImage.to_filename, parrec.PARRECImage.to_filename, spm2analyze.Spm2AnalyzeImage.to_filename
 
-pandas
-
-* read_csv, read_table, read_excel, read_hdf, read_pickle, read_stata, read_msgpack
-* DataFrame.to_csv, DataFrame.to_excel, DataFrame.to_hdf, DataFrame.to_msgpack, DataFrame.to_stata, DataFrame.to_pickle, Panel.to_excel, Panel.to_hdf, Panel.to_msgpack, Panel.to_pickle, Series.to_csv, Series.to_hdf, Series.to_msgpack, Series.to_pickle
-
 PIL (currently commented out of recipy)
 
 * Image.open
@@ -212,120 +207,6 @@ Fails on:
 * Docker 1.12.0 and Ubuntu 14.04.4 LTS + 3.4.3
 
 Cause: changes to package API. These use Pillow 2.3.0. Others use 3.2.0+.
-
-### pandas `TypeError`
-
-```
-$ python run_pandas.py read_excel data/pandas/dataframe.xls
-Traceback (most recent call last):
-  File "run_pandas.py", line 235, in <module>
-    function(arguments)
-  File "run_pandas.py", line 57, in invoke_read_excel
-    data = pd.read_excel(file_name)
-TypeError: read_excel() takes exactly 2 arguments (1 given)
-
-$ python3 run_pandas.py read_excel data/pandas/dataframe.xls
-...as above but different message printed...
-TypeError: read_excel() missing 1 required positional argument: 'sheetname'
-
-$ python run_pandas.py read_hdf data/pandas/dataframe.hdf
-Traceback (most recent call last):
-  File "run_pandas.py", line 235, in <module>
-    function(arguments)
-  File "run_pandas.py", line 65, in invoke_read_hdf
-    data = pd.read_hdf(file_name)
-TypeError: read_hdf() takes exactly 2 arguments (1 given)
-
-$ python3 run_pandas.py read_hdf data/pandas/dataframe.hdf
-...as above but different message printed...
-TypeError: read_hdf() missing 1 required positional argument: 'key'
-```
-
-Fails on:
-
-* Ubuntu 14.04.3 LTS + 2.7.6
-* Ubuntu 14.04.3 LTS + 3.4.3
-* Docker 1.12.0 and Ubuntu 14.04.4 LTS + 3.4.3
-
-Cause: changes to package API. These use pandas 0.13.1. Others use 0.18.1.
-
-### pandas `ImportError`
-
-```
-$ python run_pandas.py read_pickle data/pandas/dataframe.pickle
-Traceback (most recent call last):
-  File "run_pandas.py", line 235, in <module>
-    function(arguments)
-  File "run_pandas.py", line 73, in invoke_read_pickle
-    data = pd.read_pickle(file_name)
-  File "/usr/lib/python2.7/dist-packages/pandas/io/pickle.py", line 49, in read_pickle
-    return try_read(path)
-  File "/usr/lib/python2.7/dist-packages/pandas/io/pickle.py", line 46, in try_read
-    return pc.load(fh, encoding=encoding, compat=True)
-  File "/usr/lib/python2.7/dist-packages/pandas/compat/pickle_compat.py", line 89, in load
-    return up.load()
-  File "/usr/lib/python2.7/pickle.py", line 858, in load
-    dispatch[key](self)
-  File "/usr/lib/python2.7/pickle.py", line 1090, in load_global
-    klass = self.find_class(module, name)
-  File "/usr/lib/python2.7/pickle.py", line 1124, in find_class
-    __import__(module)
-ImportError: No module named indexes.base
-
-$ python3 run_pandas.py read_pickle data/pandas/dataframe.pickle
-Traceback (most recent call last):
-  File "/usr/lib/python3/dist-packages/pandas/io/pickle.py", line 43, in try_read
-    return pc.load(fh, encoding=encoding, compat=False)
-  File "/usr/lib/python3/dist-packages/pandas/compat/pickle_compat.py", line 89, in load
-    return up.load()
-  File "/usr/lib/python3.4/pickle.py", line 1038, in load
-    dispatch[key[0]](self)
-  File "/usr/lib/python3.4/pickle.py", line 1325, in load_global
-    klass = self.find_class(module, name)
-  File "/usr/lib/python3.4/pickle.py", line 1375, in find_class
-    __import__(module, level=0)
-ImportError: No module named 'pandas.indexes'
-
-During handling of the above exception, another exception occurred:
-...
-```
-
-Fails on:
-
-* Ubuntu 14.04.3 LTS + 2.7.6
-* Ubuntu 14.04.3 LTS + 3.4.3
-* Docker 1.12.0 and Ubuntu 14.04.4 LTS + 3.4.3
-
-Cause: changes to package API. These use pandas 0.13.1. Others use 0.18.1.
-
-### pandas `ValueError`
-
-```
-$ python run_pandas.py read_msgpack data/pandas/dataframe.mpack
-Traceback (most recent call last):
-  File "run_pandas.py", line 235, in <module>
-    function(arguments)
-  File "run_pandas.py", line 89, in invoke_read_msgpack
-    data = pd.read_msgpack(file_name)
-  File "/usr/lib/python2.7/dist-packages/pandas/io/packers.py", line 156, in read_msgpack
-    return read(fh)
-  File "/usr/lib/python2.7/dist-packages/pandas/io/packers.py", line 141, in read
-    l = list(unpack(fh))
-  File "msgpack.pyx", line 662, in pandas.msgpack.Unpacker.__next__ (pandas/msgpack.cpp:8143)
-  File "msgpack.pyx", line 608, in pandas.msgpack.Unpacker._unpack (pandas/msgpack.cpp:7415)
-ValueError: Unpack failed: error = -1
-
-$ python3 run_pandas.py read_msgpack data/pandas/dataframe.mpack
-...as above...
-```
-
-Fails on:
-
-* Ubuntu 14.04.3 LTS + 2.7.6
-* Ubuntu 14.04.3 LTS + 3.4.3
-* Docker 1.12.0 and Ubuntu 14.04.4 LTS + 3.4.3
-
-Cause: changes to file format. These use pandas 0.13.1. Others use 0.18.1. These work if run using data files created by pandas 0.13.1 (in `data/pandas0.13.11).
 
 ### skimage `NameError`
 

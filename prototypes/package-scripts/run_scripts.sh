@@ -4,10 +4,6 @@ MODULE=""
 mkdir -p tmp
 rm -rf tmp/*
 
-mkdir -p tmp/lxml
-python $MODULE run_lxml.etree.py parse data/lxml/data.xml
-python $MODULE run_lxml.etree.py iterparse data/lxml/data.xml
-
 mkdir -p tmp/PIL
 python $MODULE run_PIL.py Image.open data/PIL/image.png
 python $MODULE run_PIL.py Image.save data/PIL/image.png tmp/PIL/rotated.png

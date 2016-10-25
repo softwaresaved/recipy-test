@@ -11,11 +11,6 @@ gdal
 * Open
 * Driver.Create, Driver.CreateCopy
 
-lxml.etree
-
-* parse, iterparse
-* None
-
 nibabel
 
 * nifti1.Nifti1Image.from_filename, nifti2.Nifti2Image.from_filename, freesurfer.mghformat.MGHImage.from_filename, spm99analyze.Spm99AnalyzeImage.from_filename, minc1.Minc1Image.from_filename, minc2.Minc2Image.from_filename, analyze.AnalyzeImage.from_filename, parrec.PARRECImage.from_filename, spm2analyze.Spm2AnalyzeImage.from_filename

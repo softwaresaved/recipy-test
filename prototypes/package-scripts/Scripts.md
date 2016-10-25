@@ -4,7 +4,7 @@ Mike Jackson, The Software Sustainability Institute / EPCC, The University of Ed
 
 ## Overview
 
-A set of small scripts have been written to invoke every input and output function logged by the current release of recipy, in addition to `scikit-image` and `pillow` even though, as noted earlier, these are currently commented out. These were written so that I'd have code that can be evolved into automated tests.
+A set of small scripts have been written to invoke every input and output function logged by the current release of recipy, in addition to `scikit-image` even though, as noted earlier, these are currently commented out. These were written so that I'd have code that can be evolved into automated tests.
 
 gdal
 
@@ -15,11 +15,6 @@ nibabel
 
 * nifti1.Nifti1Image.from_filename, nifti2.Nifti2Image.from_filename, freesurfer.mghformat.MGHImage.from_filename, spm99analyze.Spm99AnalyzeImage.from_filename, minc1.Minc1Image.from_filename, minc2.Minc2Image.from_filename, analyze.AnalyzeImage.from_filename, parrec.PARRECImage.from_filename, spm2analyze.Spm2AnalyzeImage.from_filename
 * nifti1.Nifti1Image.to_filename, nifti2.Nifti2Image.to_filename, freesurfer.mghformat.MGHImage.to_filename, spm99analyze.Spm99AnalyzeImage.to_filename, minc1.Minc1Image.to_filename, minc2.Minc2Image.to_filename, analyze.AnalyzeImage.to_filename, parrec.PARRECImage.to_filename, spm2analyze.Spm2AnalyzeImage.to_filename
-
-PIL (currently commented out of recipy)
-
-* Image.open
-* Image.save
 
 skimage (currently commented out of recipy)
 
@@ -172,31 +167,6 @@ Fails on:
 * Ubuntu 14.04.3 LTS + 3.4.0 (pyenv 20160726)
 
 Cause: NiBabel interface functions not implemented by sub-classes.
-
-### PIL `AttributeError`
-
-```
-$ python run_PIL.py Image.open data/PIL/image.png
-Traceback (most recent call last):
-  File "run_PIL.py", line 38, in <module>
-    function(arguments)
-  File "run_PIL.py", line 15, in invoke_Image_open
-    with Image.open(file_name) as f:
-  File "/usr/lib/python2.7/dist-packages/PIL/Image.py", line 528, in __getattr__
-    raise AttributeError(name)
-AttributeError: __exit__
-
-$ python run_PIL.py Image.save data/PIL/image.png tmp/PIL/rotated.png
-...as above...
-```
-
-Fails on:
-
-* Ubuntu 14.04.3 LTS + 2.7.6
-* Ubuntu 14.04.3 LTS + 3.4.3
-* Docker 1.12.0 and Ubuntu 14.04.4 LTS + 3.4.3
-
-Cause: changes to package API. These use Pillow 2.3.0. Others use 3.2.0+.
 
 ### skimage `NameError`
 

@@ -1,8 +1,4 @@
 {
-    "PIL": {
-	"Image.open": ["data/PIL/image.png"],
-	"Image.save": ["data/PIL/image.png", "OUTPUT/rotated.png"]
-    },
     "sklearn": {
 	"dump_svmlight_file": ["OUTPUT/data.svmlight"],
 	"load_svmlight_file": ["data/sklearn/data.svmlight"]

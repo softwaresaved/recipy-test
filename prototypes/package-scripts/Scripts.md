@@ -6,11 +6,6 @@ Mike Jackson, The Software Sustainability Institute / EPCC, The University of Ed
 
 A set of small scripts have been written to invoke every input and output function logged by the current release of recipy, in addition to `scikit-image` and `pillow` even though, as noted earlier, these are currently commented out. These were written so that I'd have code that can be evolved into automated tests.
 
-bs4
-
-* BeautifulSoup
-* None
-
 gdal
 
 * Open

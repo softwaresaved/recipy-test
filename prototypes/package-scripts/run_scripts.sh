@@ -4,9 +4,6 @@ MODULE=""
 mkdir -p tmp
 rm -rf tmp/*
 
-mkdir -p tmp/bs4
-python $MODULE run_bs4.py BeautifulSoup data/bs4/index.html
-
 mkdir -p tmp/lxml
 python $MODULE run_lxml.etree.py parse data/lxml/data.xml
 python $MODULE run_lxml.etree.py iterparse data/lxml/data.xml

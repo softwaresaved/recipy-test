@@ -1,7 +1,4 @@
 {
-    "bs4": {
-	"BeautifulSoup": ["data/bs4/index.html"]
-	},
     "lxml.etree": {
 	"parse": ["data/lxml/data.xml"],
 	"iterparse": ["data/lxml/data.xml"]

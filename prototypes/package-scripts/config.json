@@ -7,25 +7,6 @@
 	"io.load_sift": ["data/skimage/sift.key"],
 	"io_load_surf": ["data/skimage/image.surf"]
 	},
-    "nibabel": {
-	"nifti1.Nifti1Image.from_filename": ["data/nibabel/nifti1_image"],
-	"nifti1.Nifti1Image.to_filename": ["OUTPUT/nifti1_image"],
-	"nifti2.Nifti2Image.from_filename": ["data/nibabel/nifti2_image"],
-	"nifti2.Nifti2Image.to_filename": ["OUTPUT/nifti2_image"],
-	"freesurfer.mghformat.MGHImage.from_filename": ["data/nibabel/mgh_image"],
-	"freesurfer.mghformat.MGHImage.to_filename": ["OUTPUT/mgh_image"],
-	"spm99analyze.Spm99AnalyzeImage.from_filename": ["data/nibabel/spm99_image"],
-	"spm99analyze.Spm99AnalyzeImage.to_filename": ["OUTPUT/spm99_image"],
-	"minc1.Minc1Image.from_filename": ["data/nibabel/minc1_image"],
-	"minc1.Minc1Image.to_filename": ["OUTPUT/minc1_image"],
-	"minc2.Minc2Image.from_filename": ["data/nibabel/minc2_image"],
-	"minc2.Minc2Image.to_filename": ["OUTPUT/minc2_image"],
-	"analyze.AnalyzeImage.from_filename": ["data/nibabel/analyze_image"],
-	"analyze.AnalyzeImage.to_filename": ["OUTPUT/analyze_image"],
-	"parrec.PARRECImage.from_filename": ["data/nibabel/parrec_image.PAR"],
-	"parrec.PARRECImage.to_filename": ["data/nibabel/parrec_image.PAR", "OUTPUT/parrec_image"],
-	"spm2analyze.Spm2AnalyzeImage.from_filename": ["data/nibabel/spm2_image"],
-	"spm2analyze.Spm2AnalyzeImage.to_filename": ["OUTPUT/spm2_image"]
     },
     "gdal": {
 	"Open": ["data/gdal/image.tiff"],

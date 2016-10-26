@@ -12,26 +12,6 @@ python $MODULE run_skimage.py external.tifffile.imsave data/skimage/image.tiff t
 python $MODULE run_skimage.py io.load_sift data/skimage/sift.key 
 python $MODULE run_skimage.py io_load_surf data/skimage/image.surf 
 
-mkdir -p tmp/nibabel
-python $MODULE run_nibabel.py nifti1.Nifti1Image.from_filename data/nibabel/nifti1_image
-python $MODULE run_nibabel.py nifti1.Nifti1Image.to_filename tmp/nibabel/nifti1_image
-python $MODULE run_nibabel.py nifti2.Nifti2Image.from_filename data/nibabel/nifti2_image
-python $MODULE run_nibabel.py nifti2.Nifti2Image.to_filename tmp/nibabel/nifti2_image
-python $MODULE run_nibabel.py freesurfer.mghformat.MGHImage.from_filename data/nibabel/mgh_image
-python $MODULE run_nibabel.py freesurfer.mghformat.MGHImage.to_filename tmp/nibabel/mgh_image
-python $MODULE run_nibabel.py spm99analyze.Spm99AnalyzeImage.from_filename data/nibabel/spm99_image
-python $MODULE run_nibabel.py spm99analyze.Spm99AnalyzeImage.to_filename tmp/nibabel/spm99_image
-python $MODULE run_nibabel.py minc1.Minc1Image.from_filename data/nibabel/minc1_image
-python $MODULE run_nibabel.py minc1.Minc1Image.to_filename tmp/nibabel/minc1_image
-python $MODULE run_nibabel.py minc2.Minc2Image.from_filename data/nibabel/minc2_image
-python $MODULE run_nibabel.py minc2.Minc2Image.to_filename tmp/nibabel/minc2_image
-python $MODULE run_nibabel.py analyze.AnalyzeImage.from_filename data/nibabel/analyze_image
-python $MODULE run_nibabel.py analyze.AnalyzeImage.to_filename tmp/nibabel/analyze_image
-python $MODULE run_nibabel.py parrec.PARRECImage.from_filename data/nibabel/parrec_image.PAR
-python $MODULE run_nibabel.py parrec.PARRECImage.to_filename data/nibabel/parrec_image.PAR tmp/nibabel/parrec_image
-python $MODULE run_nibabel.py spm2analyze.Spm2AnalyzeImage.from_filename data/nibabel/spm2_image
-python $MODULE run_nibabel.py spm2analyze.Spm2AnalyzeImage.to_filename tmp/nibabel/spm2_image
-
 mkdir -p tmp/gdal
 python $MODULE run_gdal.py Open data/gdal/image.tiff
 python $MODULE run_gdal.py Driver.Create tmp/gdal/image.tiff

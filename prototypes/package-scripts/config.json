@@ -1,7 +1,0 @@
-{
-    "gdal": {
-	"Open": ["data/gdal/image.tiff"],
-	"Driver.Create": ["OUTPUT/image.tiff"],
-	"Driver.CreateCopy": ["data/gdal/image.tiff", "OUTPUT/imagecopy.tiff"]
-    }
-}

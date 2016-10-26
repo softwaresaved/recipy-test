@@ -1,13 +1,4 @@
 {
-    "skimage": {
-	"io.imread": ["data/skimage/image.png"],
-	"io.imsave": ["data/skimage/image.png", "OUTPUT/rotated.png"],
-	"external.tifffile.imread": ["data/skimage/image.tiff"],
-	"external.tifffile.imsave": ["data/skimage/image.tiff", "OUTPUT/rotated.tiff"],
-	"io.load_sift": ["data/skimage/sift.key"],
-	"io_load_surf": ["data/skimage/image.surf"]
-	},
-    },
     "gdal": {
 	"Open": ["data/gdal/image.tiff"],
 	"Driver.Create": ["OUTPUT/image.tiff"],

@@ -21,9 +21,11 @@ provenance tracking package.
 * Travis CI job and documentation. Sample 
   [Travis CI](https://travis-ci.org/) job that runs test framework, 
   plus documentation on how to configure Travis CI.
+  - Example: https://travis-ci.org/mikej888/recipy 
 * AppVeyor job and documentation. Sample
   [AppVeyor](https://www.appveyor.com/) job that runs test framework, 
   plus documentation on how to configure AppVeyor.
+  - Example: https://ci.appveyor.com/project/mikej888/recipy 
 
 If time permits:
 
